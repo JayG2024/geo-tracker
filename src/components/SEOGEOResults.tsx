@@ -284,11 +284,11 @@ const SEOGEOResults: React.FC<Props> = ({
               <h4 className="font-medium text-gray-900">Technical SEO</h4>
               <div className="space-y-2">
                 {Object.entries({
-                  'Page Speed': analysis.seo.technical.pageSpeed,
-                  'Mobile Responsive': analysis.seo.technical.mobileResponsive,
-                  'HTTPS Enabled': analysis.seo.technical.httpsEnabled,
-                  'XML Sitemap': analysis.seo.technical.xmlSitemap,
-                  'Structured Data': analysis.seo.technical.structuredData
+                  'Page Speed': analysis?.seo?.technical?.pageSpeed,
+                  'Mobile Responsive': analysis?.seo?.technical?.mobileResponsive,
+                  'HTTPS Enabled': analysis?.seo?.technical?.httpsEnabled,
+                  'XML Sitemap': analysis?.seo?.technical?.xmlSitemap,
+                  'Structured Data': analysis?.seo?.technical?.structuredData
                 }).map(([key, value]) => (
                   <div key={key} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                     <span className="text-sm text-gray-700">{key}</span>
@@ -313,11 +313,11 @@ const SEOGEOResults: React.FC<Props> = ({
               <h4 className="font-medium text-gray-900">Content Optimization</h4>
               <div className="space-y-2">
                 {Object.entries({
-                  'Title Tag': analysis.seo.content.titleTag,
-                  'Meta Description': analysis.seo.content.metaDescription,
-                  'Heading Structure': analysis.seo.content.headingStructure,
-                  'Content Length': `${analysis.seo.content.contentLength} words`,
-                  'Readability Score': analysis.seo.content.readabilityScore
+                  'Title Tag': analysis?.seo?.content?.titleTag,
+                  'Meta Description': analysis?.seo?.content?.metaDescription,
+                  'Heading Structure': analysis?.seo?.content?.headingStructure,
+                  'Content Length': `${analysis?.seo?.content?.contentLength ?? ''} words`,
+                  'Readability Score': analysis?.seo?.content?.readabilityScore
                 }).map(([key, value]) => (
                   <div key={key} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                     <span className="text-sm text-gray-700">{key}</span>
@@ -359,7 +359,7 @@ const SEOGEOResults: React.FC<Props> = ({
             <div>
               <h4 className="font-medium text-gray-900 mb-3">AI Platform Visibility</h4>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                {Object.entries(analysis.geo.aiVisibility).map(([platform, visible]) => {
+                {Object.entries(analysis?.geo?.aiVisibility || {}).map(([platform, visible]) => {
                   if (platform === 'score') return null;
                   return (
                     <div key={platform} className={`p-3 rounded-lg text-center ${
@@ -382,10 +382,10 @@ const SEOGEOResults: React.FC<Props> = ({
               <h4 className="font-medium text-gray-900 mb-3">Information Accuracy</h4>
               <div className="space-y-2">
                 {Object.entries({
-                  'Business Name': analysis.geo.informationAccuracy.businessNameCorrect,
-                  'Services Listed': analysis.geo.informationAccuracy.servicesAccurate,
-                  'Contact Info': analysis.geo.informationAccuracy.contactInfoCorrect,
-                  'Location': analysis.geo.informationAccuracy.locationAccurate
+                  'Business Name': analysis?.geo?.informationAccuracy?.businessNameCorrect,
+                  'Services Listed': analysis?.geo?.informationAccuracy?.servicesAccurate,
+                  'Contact Info': analysis?.geo?.informationAccuracy?.contactInfoCorrect,
+                  'Location': analysis?.geo?.informationAccuracy?.locationAccurate
                 }).map(([key, value]) => (
                   <div key={key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="text-sm text-gray-700">{key}</span>

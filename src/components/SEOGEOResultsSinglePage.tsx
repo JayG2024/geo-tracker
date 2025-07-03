@@ -222,11 +222,11 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
             <h4 className="font-semibold text-gray-900">Technical SEO</h4>
             <div className="space-y-2">
               {Object.entries({
-                'Page Speed': analysis.seo.technical.pageSpeed,
-                'Mobile Responsive': analysis.seo.technical.mobileResponsive,
-                'HTTPS Enabled': analysis.seo.technical.httpsEnabled,
-                'XML Sitemap': analysis.seo.technical.xmlSitemap,
-                'Structured Data': analysis.seo.technical.structuredData
+                'Page Speed': analysis?.seo?.technical?.pageSpeed,
+                'Mobile Responsive': analysis?.seo?.technical?.mobileResponsive,
+                'HTTPS Enabled': analysis?.seo?.technical?.httpsEnabled,
+                'XML Sitemap': analysis?.seo?.technical?.xmlSitemap,
+                'Structured Data': analysis?.seo?.technical?.structuredData
               }).map(([key, value]) => (
                 <div key={key} className="flex items-center justify-between p-3 bg-gray-50 rounded">
                   <span className="text-sm text-gray-700">{key}</span>
@@ -237,8 +237,8 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
                       <XCircle className="w-4 h-4 text-red-600" />
                     )
                   ) : (
-                    <span className={`font-medium ${getScoreColor(value as number)}`}>
-                      {value}%
+                    <span className={`font-medium ${getScoreColor(typeof value === 'number' ? value : 0)}`}>
+                      {typeof value === 'number' ? value : 0}%
                     </span>
                   )}
                 </div>
@@ -251,11 +251,11 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
             <h4 className="font-semibold text-gray-900">Content Optimization</h4>
             <div className="space-y-2">
               {Object.entries({
-                'Title Tag': analysis.seo.content.titleTag,
-                'Meta Description': analysis.seo.content.metaDescription,
-                'Heading Structure': analysis.seo.content.headingStructure,
-                'Content Length': `${analysis.seo.content.contentLength} words`,
-                'Readability Score': analysis.seo.content.readabilityScore
+                'Title Tag': analysis?.seo?.content?.titleTag,
+                'Meta Description': analysis?.seo?.content?.metaDescription,
+                'Heading Structure': analysis?.seo?.content?.headingStructure,
+                'Content Length': `${analysis?.seo?.content?.contentLength ?? ''} words`,
+                'Readability Score': analysis?.seo?.content?.readabilityScore
               }).map(([key, value]) => (
                 <div key={key} className="flex items-center justify-between p-3 bg-gray-50 rounded">
                   <span className="text-sm text-gray-700">{key}</span>
@@ -297,7 +297,7 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
           <div>
             <h4 className="font-semibold text-gray-900 mb-3">AI Platform Visibility</h4>
             <div className="grid md:grid-cols-2 gap-4">
-              {Object.entries(analysis.geo.aiVisibility).map(([platform, visible]) => (
+              {Object.entries(analysis?.geo?.aiVisibility || {}).map(([platform, visible]) => (
                 <div key={platform} className="flex items-center justify-between p-3 bg-gray-50 rounded">
                   <span className="text-sm text-gray-700 capitalize">{platform}</span>
                   {visible ? (
@@ -317,38 +317,9 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
           </div>
 
           {/* Ranking Factors */}
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-3">GEO Ranking Factors</h4>
-            <div className="grid md:grid-cols-2 gap-3">
-              {Object.entries(analysis.geo.rankingFactors).map(([factor, score]) => (
-                <div key={factor} className="p-3 bg-gray-50 rounded">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm text-gray-700">{factor.replace(/([A-Z])/g, ' $1').trim()}</span>
-                    <span className={`font-medium ${getScoreColor(score)}`}>{score}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className={`h-full rounded-full ${score >= 80 ? 'bg-green-500' : score >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                      style={{ width: `${score}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
+          {/* Removed: analysis.geo.rankingFactors (not in GEOMetrics) */}
           {/* Content Optimization Status */}
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-3">AI-Optimized Content</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-              {Object.entries(analysis.geo.contentOptimization).map(([key, value]) => (
-                <div key={key} className="bg-gray-50 rounded-lg p-3">
-                  <div className="text-2xl mb-1">{value ? '✅' : '❌'}</div>
-                  <p className="text-xs text-gray-600">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Removed: analysis.geo.contentOptimization (not in GEOMetrics) */}
         </div>
       </div>
 
@@ -360,8 +331,8 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
             {analysis.competitorComparison.map((comp, i) => (
               <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
-                  <p className="font-medium text-gray-900">{comp.domain}</p>
-                  <p className="text-sm text-gray-600">Rank #{comp.position}</p>
+                  <p className="font-medium text-gray-900">{comp.name}</p>
+                  <p className="text-sm text-gray-600">{comp.url}</p>
                 </div>
                 <div className="flex gap-6 text-center">
                   <div>
