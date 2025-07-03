@@ -178,7 +178,7 @@ function AppContent() {
   };
 
   const navigation = [
-    { id: 'analyze', name: 'SEO + GEO Analysis', icon: Brain, path: '/' },
+    { id: 'analyze', name: 'AI Visibility Test', icon: Brain, path: '/' },
     { id: 'dashboard', name: 'Dashboard', icon: Home, path: '/dashboard' },
     { id: 'projects', name: 'My Websites', icon: FolderOpen, path: '/projects' },
     { id: 'reports', name: 'Reports', icon: Share2, path: '/reports' },
@@ -288,12 +288,12 @@ function AppContent() {
             <div className="flex items-center space-x-4">
               <div className="hidden sm:block">
                 <p className="text-sm text-gray-600">
-                  {location.pathname === '/' && 'Complete SEO audit + AI search visibility analysis in one scan'}
-                  {location.pathname === '/dashboard' && 'SEO + GEO visibility tracking for Google and AI search engines'}
-                  {location.pathname === '/results' && 'Comprehensive SEO and GEO optimization recommendations'}
-                  {location.pathname === '/projects' && 'Track and monitor your websites\' search performance over time'}
-                  {location.pathname === '/reports' && 'Professional PDF reports for clients and stakeholders'}
-                  {location.pathname === '/settings' && 'Configure analysis settings and account preferences'}
+                  {location.pathname === '/' && 'Test how ChatGPT, Claude, Perplexity and Gemini see your website'}
+                  {location.pathname === '/dashboard' && 'AI search visibility tracking across all major AI platforms'}
+                  {location.pathname === '/results' && 'AI optimization recommendations to improve visibility'}
+                  {location.pathname === '/projects' && 'Monitor your AI search rankings over time'}
+                  {location.pathname === '/reports' && 'Professional AI visibility reports for stakeholders'}
+                  {location.pathname === '/settings' && 'Configure your AI testing preferences'}
                 </p>
               </div>
             </div>
@@ -302,7 +302,7 @@ function AppContent() {
               <div className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-100 to-purple-100">
                 <span className="text-sm font-medium text-blue-800">🚀</span>
                 <span className="text-sm font-medium text-gray-700 ml-1">
-                  SEO + GEO Analysis
+                  AI Search Testing
                 </span>
               </div>
             </div>

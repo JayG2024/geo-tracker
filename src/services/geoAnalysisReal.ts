@@ -5,12 +5,12 @@ import { performMultiAIAnalysis } from './aiAnalysis';
 
 export const performRealGEOAnalysis = async (url: string): Promise<GEOMetrics> => {
   try {
-    console.log('Starting real GEO analysis for:', url);
+    // Starting real GEO analysis
     
     // Run real AI visibility tests in parallel with error handling
     const [visibilityReport, aiAnalysis] = await Promise.all([
       testAllAIPlatforms(url).catch(error => {
-        console.error('AI visibility test failed:', error);
+        // AI visibility test failed - return fallback
         return {
           url,
           overallVisibility: 0,
@@ -20,7 +20,7 @@ export const performRealGEOAnalysis = async (url: string): Promise<GEOMetrics> =
         };
       }),
       performMultiAIAnalysis(url, {}).catch(error => {
-        console.error('Multi-AI analysis failed:', error);
+        // Multi-AI analysis failed - return fallback
         return {
           finalScore: 65,
           confidence: 0.5,
@@ -143,7 +143,7 @@ export const performRealGEOAnalysis = async (url: string): Promise<GEOMetrics> =
       }
     };
   } catch (error) {
-    console.error('Real GEO analysis failed, using fallback:', error);
+    // Real GEO analysis failed, using fallback
     // Return a basic score if real analysis fails
     return generateFallbackGEOMetrics(url);
   }

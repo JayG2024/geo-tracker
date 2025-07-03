@@ -42,23 +42,23 @@ const SEOGEOAnalysisForm: React.FC<Props> = ({
       <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-8 text-white">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-4xl font-bold mb-4">
-            SEO + GEO Analysis Tool
+            GEO AI Testing Platform
           </h1>
           <p className="text-xl text-blue-100 mb-2">
-            The first tool to analyze both traditional SEO and AI search visibility
+            Test your website's visibility across AI search engines and chatbots
           </p>
           <div className="flex items-center justify-center gap-8 mt-6">
             <div className="flex items-center gap-2">
-              <Globe className="w-5 h-5" />
-              <span className="text-sm">Google SEO</span>
+              <Brain className="w-5 h-5" />
+              <span className="text-sm">ChatGPT & Claude</span>
             </div>
             <div className="flex items-center gap-2">
-              <Brain className="w-5 h-5" />
-              <span className="text-sm">AI Search (GEO)</span>
+              <Sparkles className="w-5 h-5" />
+              <span className="text-sm">Perplexity & Gemini</span>
             </div>
             <div className="flex items-center gap-2">
               <Zap className="w-5 h-5" />
-              <span className="text-sm">Instant Results</span>
+              <span className="text-sm">Real-Time Testing</span>
             </div>
           </div>
         </div>
@@ -71,9 +71,9 @@ const SEOGEOAnalysisForm: React.FC<Props> = ({
           <div className="flex items-start gap-3">
             <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
             <div className="flex-1">
-              <h4 className="font-medium text-green-900">Unlimited Free Analysis</h4>
+              <h4 className="font-medium text-green-900">Unlimited AI Visibility Testing</h4>
               <p className="text-green-700 text-sm mt-1">
-                Enjoy unlimited SEO + GEO analysis completely free. No limits, no restrictions!
+                Test how AI search engines see and rank your website. Completely free, no limits!
               </p>
             </div>
           </div>
