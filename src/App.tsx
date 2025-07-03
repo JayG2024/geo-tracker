@@ -18,6 +18,8 @@ import { generatePDFReport } from './components/PDFGenerator';
 import { CombinedAnalysis } from './types/analysis';
 import { ShareableReport } from './types/reports';
 import { performSEOGEOAnalysis } from './services/seoGeoAnalysis';
+import { getUserFriendlyError, getErrorActions } from './utils/errorMessages';
+import ErrorDisplay from './components/ErrorDisplay';
 
 interface AIProvider {
   name: string;
@@ -132,27 +134,8 @@ function AppContent() {
       setShowAIProgress(false);
       setIsLoading(false);
     } catch (err) {
-      // console.error('Analysis failed:', err); // Commented for production
-      
-      // Show the actual error to help debug
-      let errorMessage = '';
-      if (err instanceof Error) {
-        if (err.message.includes('URL')) {
-          errorMessage = 'Invalid URL format. Please enter a valid website URL (e.g., example.com or https://example.com)';
-        } else if (err.message.includes('network') || err.message.includes('fetch')) {
-          errorMessage = 'Network error. Please check your connection and try again.';
-        } else if (err.message.includes('401') || err.message.includes('403')) {
-          errorMessage = 'API authentication failed. Please check that all API keys are correctly configured on Vercel.';
-        } else if (err.message.includes('429')) {
-          errorMessage = 'API rate limit exceeded. Please try again in a few minutes.';
-        } else {
-          // Show the actual error message
-          errorMessage = `Error: ${err.message}`;
-        }
-      } else {
-        errorMessage = 'An unexpected error occurred. Please try again.';
-      }
-      
+      // Use user-friendly error messages
+      const errorMessage = getUserFriendlyError(err);
       setError(errorMessage);
       setShowAIProgress(false);
       setIsLoading(false);

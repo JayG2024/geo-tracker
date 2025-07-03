@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Sparkles, TrendingUp, Brain, Globe, Zap, CheckCircle } from 'lucide-react';
+import ErrorDisplay from './ErrorDisplay';
+import { ERROR_MESSAGES } from '../utils/errorMessages';
 
 interface Props {
   onAnalyze: (url: string) => void;
@@ -22,7 +24,7 @@ const SEOGEOAnalysisForm: React.FC<Props> = ({
     setError('');
 
     if (!url) {
-      setError('Please enter a URL');
+      setError(ERROR_MESSAGES.INVALID_URL);
       return;
     }
 
@@ -32,7 +34,7 @@ const SEOGEOAnalysisForm: React.FC<Props> = ({
       onAnalyze(urlObj.href);
       setUrl('');
     } catch {
-      setError('Please enter a valid URL');
+      setError(ERROR_MESSAGES.INVALID_URL);
     }
   };
 
@@ -98,10 +100,15 @@ const SEOGEOAnalysisForm: React.FC<Props> = ({
               />
               <Globe className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
             </div>
-            {error && (
-              <p className="mt-2 text-sm text-red-600">{error}</p>
-            )}
           </div>
+          
+          {error && (
+            <ErrorDisplay 
+              error={error} 
+              onDismiss={() => setError('')}
+              type="error"
+            />
+          )}
 
           {/* What We Analyze */}
           <div className="grid md:grid-cols-2 gap-6">
