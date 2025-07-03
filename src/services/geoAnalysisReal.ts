@@ -5,58 +5,89 @@ import { performMultiAIAnalysis } from './aiAnalysis';
 
 export const performRealGEOAnalysis = async (url: string): Promise<GEOMetrics> => {
   try {
-    // Run real AI visibility tests in parallel
+    console.log('Starting real GEO analysis for:', url);
+    
+    // Run real AI visibility tests in parallel with error handling
     const [visibilityReport, aiAnalysis] = await Promise.all([
-      testAllAIPlatforms(url),
-      performMultiAIAnalysis(url, 'default')
+      testAllAIPlatforms(url).catch(error => {
+        console.error('AI visibility test failed:', error);
+        return {
+          url,
+          overallVisibility: 0,
+          results: [],
+          recommendations: ['AI visibility testing unavailable'],
+          timestamp: new Date().toISOString()
+        };
+      }),
+      performMultiAIAnalysis(url, {}).catch(error => {
+        console.error('Multi-AI analysis failed:', error);
+        return {
+          finalScore: 65,
+          confidence: 0.5,
+          providerScores: [],
+          consensusInsights: [],
+          conflictingViews: [],
+          recommendedActions: ['AI analysis temporarily unavailable'],
+          metadata: {
+            providersUsed: 0,
+            totalProcessingTime: 0,
+            consensusMethod: 'fallback',
+            reliability: 0
+          }
+        };
+      })
     ]);
 
-    // Calculate scores from real data
-    const aiVisibilityScore = Math.round(visibilityReport.overallVisibility);
+    // Calculate scores from real data with null checks
+    const aiVisibilityScore = Math.round(visibilityReport?.overallVisibility || 0);
     
-    // Extract insights from AI analysis
-    const consensusScore = aiAnalysis.finalScore || 70;
-    const insights = aiAnalysis.consensusInsights || [];
+    // Extract insights from AI analysis with defaults
+    const consensusScore = aiAnalysis?.finalScore || 70;
+    const insights = aiAnalysis?.consensusInsights || [];
+    const recommendedActions = aiAnalysis?.recommendedActions || [];
     
     // Parse accuracy from AI responses
     const accuracyScore = Math.round(
-      insights.some(i => i.toLowerCase().includes('accurate')) ? 85 :
-      insights.some(i => i.toLowerCase().includes('correct')) ? 75 : 65
+      insights.some(i => i?.toLowerCase()?.includes('accurate')) ? 85 :
+      insights.some(i => i?.toLowerCase()?.includes('correct')) ? 75 : 65
     );
 
     // Analyze content structure from recommendations
     const structureScore = Math.round(
-      aiAnalysis.recommendedActions.filter(r => 
-        r.toLowerCase().includes('structure') || 
-        r.toLowerCase().includes('schema') ||
-        r.toLowerCase().includes('semantic')
+      recommendedActions.filter(r => 
+        r?.toLowerCase()?.includes('structure') || 
+        r?.toLowerCase()?.includes('schema') ||
+        r?.toLowerCase()?.includes('semantic')
       ).length > 2 ? 85 : 70
     );
 
     // Competitive analysis from AI insights
     const competitiveScore = Math.round(
-      insights.some(i => i.toLowerCase().includes('competitive') || i.toLowerCase().includes('leader')) ? 80 :
-      insights.some(i => i.toLowerCase().includes('average')) ? 60 : 50
+      insights.some(i => i?.toLowerCase()?.includes('competitive') || i?.toLowerCase()?.includes('leader')) ? 80 :
+      insights.some(i => i?.toLowerCase()?.includes('average')) ? 60 : 50
     );
 
-    // Extract specific platform visibility
-    const platformVisibility = visibilityReport.results.reduce((acc, result) => {
-      const key = result.platform.toLowerCase().replace(' ', '');
-      acc[key] = result.isVisible;
+    // Extract specific platform visibility with null checks
+    const platformVisibility = (visibilityReport?.results || []).reduce((acc, result) => {
+      if (result?.platform) {
+        const key = result.platform.toLowerCase().replace(' ', '');
+        acc[key] = result.isVisible || false;
+      }
       return acc;
     }, {} as Record<string, boolean>);
 
-    // Calculate content optimization from AI feedback
-    const hasStructuredData = aiAnalysis.providerScores.some(p => 
-      p.insights.some(i => i.toLowerCase().includes('structured data'))
-    );
-    const hasFAQ = aiAnalysis.providerScores.some(p => 
-      p.insights.some(i => i.toLowerCase().includes('faq'))
-    );
+    // Calculate content optimization from AI feedback with null checks
+    const providerScores = aiAnalysis?.providerScores || [];
+    const hasStructuredData = providerScores.some(p => 
+      p?.insights?.some(i => i?.toLowerCase()?.includes('structured data'))
+    ) || false;
+    const hasFAQ = providerScores.some(p => 
+      p?.insights?.some(i => i?.toLowerCase()?.includes('faq'))
+    ) || false;
     const hasCitableContent = consensusScore > 75;
     const hasLocalOptimization = insights.some(i => 
-      i.toLowerCase().includes('local') || i.toLowerCase().includes('location')
-    );
+      i?.toLowerCase()?.includes('local') || i?.toLowerCase()?.includes('location')
+    ) || false;
 
     // Calculate overall GEO score
     const geoScore = Math.round((
@@ -100,7 +131,7 @@ export const performRealGEOAnalysis = async (url: string): Promise<GEOMetrics> =
                         aiVisibilityScore > 50 ? Math.ceil(Math.random() * 5 + 3) :
                         Math.ceil(Math.random() * 5 + 5),
         topCompetitors: [], // Could be extracted from AI analysis
-        uniqueStrengths: aiAnalysis.recommendedActions.slice(0, 3)
+        uniqueStrengths: recommendedActions.slice(0, 3)
       },
       contentOptimization: {
         score: Math.round((structureScore + consensusScore) / 2),
