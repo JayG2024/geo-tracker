@@ -260,16 +260,31 @@ export const generateCompetitorData = (url: string) => {
 
 // Main analysis function
 export const performSEOGEOAnalysis = async (url: string): Promise<CombinedAnalysis> => {
+  // Validate and normalize URL
+  let normalizedUrl = url.trim();
+  let domain = normalizedUrl;
+  
+  try {
+    // Add protocol if missing
+    if (!normalizedUrl.match(/^https?:\/\//)) {
+      normalizedUrl = 'https://' + normalizedUrl;
+    }
+    
+    const urlObj = new URL(normalizedUrl);
+    domain = urlObj.hostname.replace('www.', '');
+  } catch (error) {
+    // If URL parsing fails, use the input as domain
+    domain = normalizedUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+  }
+
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 2000));
 
-  const seoMetrics = generateSEOMetrics(url);
-  const geoMetrics = generateGEOMetrics(url);
+  const seoMetrics = generateSEOMetrics(normalizedUrl);
+  const geoMetrics = generateGEOMetrics(normalizedUrl);
   const overallScore = Math.round((seoMetrics.score + geoMetrics.score) / 2);
   const recommendations = generateRecommendations(seoMetrics, geoMetrics);
-  const competitors = generateCompetitorData(url);
-
-  const domain = new URL(url).hostname.replace('www.', '');
+  const competitors = generateCompetitorData(normalizedUrl);
 
   return {
     overallScore,
@@ -278,7 +293,8 @@ export const performSEOGEOAnalysis = async (url: string): Promise<CombinedAnalys
     recommendations,
     competitorComparison: competitors,
     lastAnalyzed: new Date(),
-    url,
-    title: domain.charAt(0).toUpperCase() + domain.slice(1)
+    url: normalizedUrl,
+    title: domain.charAt(0).toUpperCase() + domain.slice(1),
+    timestamp: new Date().toISOString()
   };
 };

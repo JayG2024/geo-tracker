@@ -92,6 +92,7 @@ export interface CombinedAnalysis {
   lastAnalyzed: Date;
   url: string;
   title: string;
+  timestamp: string;
 }
 
 export interface Recommendation {

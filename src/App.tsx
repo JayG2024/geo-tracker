@@ -129,7 +129,22 @@ function AppContent() {
       setIsLoading(false);
     } catch (err) {
       console.error('Analysis failed:', err);
-      setError('Failed to complete analysis. Please try again.');
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to complete analysis. ';
+      if (err instanceof Error) {
+        if (err.message.includes('URL')) {
+          errorMessage = 'Invalid URL format. Please enter a valid website URL (e.g., example.com or https://example.com)';
+        } else if (err.message.includes('network') || err.message.includes('fetch')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else {
+          errorMessage += err.message;
+        }
+      } else {
+        errorMessage += 'Please try again.';
+      }
+      
+      setError(errorMessage);
       setShowAIProgress(false);
       setIsLoading(false);
     }
