@@ -1,0 +1,51 @@
+{
+  "project": {
+    "name": "GEO Tracker - SEO + AI Search Visibility Tool",
+    "id": "geo-tracker-2024-07",
+    "type": "web-application",
+    "framework": "react-vite-typescript"
+  },
+  "paths": {
+    "root": "/Users/jasongordon/Desktop/geo-tracker/",
+    "folderColor": "BLACK",
+    "isCorrectProject": true
+  },
+  "deployment": {
+    "platform": "Vercel",
+    "projectName": "geo-tracker-deployment",
+    "url": "https://geo-tracker-deployment.vercel.app",
+    "autoDeploy": true,
+    "branch": "main"
+  },
+  "repository": {
+    "url": "https://github.com/JayG2024/geo-tracker",
+    "branch": "main",
+    "remote": "origin"
+  },
+  "identifiers": {
+    "usesRecharts": true,
+    "usesJsPDF": true,
+    "usesSerperAPI": true,
+    "hasGEOAnalysis": true,
+    "hasDualScoring": true
+  },
+  "environment": {
+    "required": [
+      "VITE_SERPER_API_KEY",
+      "VITE_GOOGLE_API_KEY",
+      "VITE_SUPABASE_URL",
+      "VITE_SUPABASE_ANON_KEY"
+    ]
+  },
+  "commands": {
+    "dev": "npm run dev",
+    "build": "npm run build",
+    "deploy": "git push origin main"
+  },
+  "metadata": {
+    "created": "2025-07-03",
+    "lastVerified": "2025-07-03",
+    "priority": "HIGH",
+    "doNotConfuseWith": ["geo-tracking-app-jaydus"]
+  }
+}
