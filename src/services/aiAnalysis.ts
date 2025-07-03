@@ -2,7 +2,7 @@
 // Enhanced Gemini Pro to handle comprehensive GEO analysis
 
 import { aiConfig, getAPIKeys, validateAPIKey } from '../config/aiConfig';
-import { scrapeWebsiteContent } from './webScraper';
+// Removed web scraper - not needed for AI visibility testing
 
 export interface AIProvider {
   name: string;
@@ -116,8 +116,8 @@ export const analyzeWithGemini = async (url: string, location: string = 'United 
   const startTime = Date.now();
   const validKeys = getValidAPIKeys();
   
-  // First, scrape the website content
-  const scrapedContent = await scrapeWebsiteContent(url);
+  // For GEO testing, we analyze how AI sees the URL, not scrape content
+  const domain = url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
   
   if (validKeys.gemini) {
     try {
@@ -142,10 +142,8 @@ JSON Format to use:
 WEBSITE URL: ${url}
 LOCATION: ${location}
 
-WEBSITE CONTENT TO ANALYZE:
-${scrapedContent}
-
-Analyze this content for Generative Engine Optimization potential, focusing on:
+ANALYZE THIS WEBSITE:
+Please visit and analyze ${url} (${domain}) for Generative Engine Optimization potential, focusing on:
 1. Citation worthiness - How likely is this content to be cited by AI systems
 2. E-E-A-T signals - Expertise, Experience, Authoritativeness, Trustworthiness
 3. Structured data implementation and opportunities
@@ -219,7 +217,7 @@ Provide specific, actionable insights and recommendations.`;
         ],
         rawData: {
           ...analysis,
-          scrapedContent: scrapedContent.substring(0, 500) + '...' // Store sample for debugging
+          analyzedUrl: url // Store URL for debugging
         },
         processingTime,
         success: true
@@ -274,7 +272,7 @@ Provide specific, actionable insights and recommendations.`;
         'Expert interview and case study development',
         'Comprehensive resource hub establishment'
       ],
-      scrapedContent: scrapedContent.substring(0, 500) + '...'
+      analyzedUrl: url
     },
     processingTime: Date.now() - startTime,
     success: true
@@ -282,12 +280,12 @@ Provide specific, actionable insights and recommendations.`;
 };
 
 // OpenAI GPT-4 GEO Content Analysis (Enhanced)
-export const analyzeWithGPT4 = async (url: string, content: string): Promise<AIAnalysisResult> => {
+export const analyzeWithGPT4 = async (url: string, content?: string): Promise<AIAnalysisResult> => {
   const startTime = Date.now();
   const validKeys = getValidAPIKeys();
   
-  // Scrape content if not provided
-  const analyzeContent = content || await scrapeWebsiteContent(url);
+  // Extract domain for analysis
+  const domain = url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
   
   if (validKeys.openai) {
     try {
@@ -320,7 +318,7 @@ export const analyzeWithGPT4 = async (url: string, content: string): Promise<AIA
               },
               {
                 role: 'user',
-                content: `Analyze this website for comprehensive GEO (Generative Engine Optimization): ${url}\n\nContent: ${analyzeContent.substring(0, 2000)}\n\nFocus on AI discoverability, citation potential, and generative search optimization.`
+                content: `Analyze this website for comprehensive GEO (Generative Engine Optimization): ${url} (${domain})\n\nFocus on AI discoverability, citation potential, and generative search optimization.`
               }
             ],
             temperature: aiConfig.providers.openai.temperature,
@@ -623,12 +621,9 @@ export const performMultiAIAnalysis = async (url: string, options: {
       onProgress?.(provider, progress);
     };
 
-    // Scrape website content first
-    const scrapedContent = content || await scrapeWebsiteContent(url);
-
-    // Execute 3-AI GEO analyses in parallel
+    // Execute 3-AI GEO analyses in parallel (no scraping needed)
     const analysisPromises = [
-      analyzeWithGPT4(url, scrapedContent).then(result => {
+      analyzeWithGPT4(url).then(result => {
         updateProgress('OpenAI GPT-4', 100);
         return result;
       }).catch(error => {
