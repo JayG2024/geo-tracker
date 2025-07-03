@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-ro
 import { BarChart3, Search, FolderOpen, Settings, Home, Menu, X, AlertTriangle, Brain, Share2 } from 'lucide-react';
 import SEOGEODashboard from './components/SEOGEODashboard';
 import SEOGEOAnalysisForm from './components/SEOGEOAnalysisForm';
-import SEOGEOResults from './components/SEOGEOResults';
+import SEOGEOResultsSinglePage from './components/SEOGEOResultsSinglePage';
 import ClientProjectManager from './components/ClientProjectManager';
 import AIAnalysisProgress from './components/AIAnalysisProgress';
 import AIProviderStatus from './components/AIProviderStatus';
@@ -324,7 +324,7 @@ function AppContent() {
             } />
             <Route path="/results" element={
               analysisResults ? (
-                <SEOGEOResults 
+                <SEOGEOResultsSinglePage 
                   analysis={analysisResults} 
                   onGeneratePDF={handleGeneratePDF}
                   onShare={handleCreateShareableReport}
