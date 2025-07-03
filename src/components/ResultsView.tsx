@@ -97,7 +97,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({ results, onGeneratePDF, onCre
                       <div className="flex items-center space-x-2">
                         <Calendar className="w-4 h-4" />
                         <span className="text-sm">
-                          {results.timestamp.toLocaleDateString('en-US', { 
+                          {new Date(results.timestamp).toLocaleDateString('en-US', { 
                             weekday: 'long', 
                             year: 'numeric', 
                             month: 'long', 

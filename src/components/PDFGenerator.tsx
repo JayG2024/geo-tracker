@@ -266,7 +266,7 @@ export const generatePDFReport = (results: AnalysisResult): void => {
   // Client information
   addText(`CLIENT: ${formattedClientName}`, fonts.heading, colors.dark, 'center', spacing.line);
   addText(`WEBSITE: ${results.url}`, fonts.body, colors.medium, 'center', spacing.line);
-  addText(`ANALYSIS DATE: ${results.timestamp.toLocaleDateString('en-US', { 
+  addText(`ANALYSIS DATE: ${new Date(results.timestamp).toLocaleDateString('en-US', { 
     weekday: 'long', 
     year: 'numeric', 
     month: 'long', 
@@ -505,7 +505,7 @@ export const generatePDFReport = (results: AnalysisResult): void => {
   doc.setLineWidth(0.5);
   doc.line(margin, yPosition, pageWidth - margin, yPosition);
   yPosition += 10;
-  addText(`GEO Analysis Report - Generated ${results.timestamp.toLocaleDateString()}`, fonts.caption, colors.light, 'center', spacing.tight);
+  addText(`GEO Analysis Report - Generated ${new Date(results.timestamp).toLocaleDateString()}`, fonts.caption, colors.light, 'center', spacing.tight);
   addText('Transforming businesses through AI-first authority building', fonts.caption, colors.light, 'center');
 
   addPageFooter();

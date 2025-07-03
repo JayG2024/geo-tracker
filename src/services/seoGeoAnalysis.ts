@@ -1,7 +1,8 @@
 import { CombinedAnalysis, SEOMetrics, GEOMetrics, Recommendation } from '../types/analysis';
-import { performRealGEOAnalysis } from './geoAnalysisReal';
+import { performOptimizedGEOAnalysis } from './optimizedGeoAnalysis';
 import { serperService } from './serperService';
 import { pageSpeedService } from './pageSpeedService';
+import { cacheService } from './cacheService';
 
 // Generate SEO metrics using real Serper API data
 export const generateSEOMetrics = async (url: string): Promise<SEOMetrics> => {
@@ -317,10 +318,10 @@ export const performSEOGEOAnalysis = async (url: string): Promise<CombinedAnalys
   try {
     // Starting real AI analysis
 
-    // Run SEO and GEO analysis in parallel
+    // Run SEO and GEO analysis in parallel with caching
     const [seoMetrics, geoMetrics] = await Promise.all([
-      generateSEOMetrics(normalizedUrl),
-      performRealGEOAnalysis(normalizedUrl) // This uses real AI APIs!
+      cacheService.getOrFetch(`seo-${normalizedUrl}`, () => generateSEOMetrics(normalizedUrl)),
+      performOptimizedGEOAnalysis(normalizedUrl) // Optimized with caching and deduplication!
     ]);
 
     const overallScore = Math.round((seoMetrics.score + geoMetrics.score) / 2);
