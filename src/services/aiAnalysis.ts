@@ -2,6 +2,7 @@
 // Enhanced Gemini Pro to handle comprehensive GEO analysis
 
 import { aiConfig, getAPIKeys, validateAPIKey } from '../config/aiConfig';
+import { scrapeWebsiteContent } from './webScraper';
 
 export interface AIProvider {
   name: string;
@@ -49,8 +50,8 @@ const AI_PROVIDERS: Record<string, AIProvider> = {
   },
   gemini: {
     name: 'Google Gemini Pro',
-    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
-    model: aiConfig.providers.gemini.model,
+    endpoint: 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent',
+    model: 'gemini-1.5-flash',
     specialty: 'GEO Technical Analysis & Market Research',
     weight: 0.35
   },
@@ -108,39 +109,7 @@ const withRetry = async <T>(
   throw lastError!;
 };
 
-// Web scraping function to extract content
-const scrapeWebsiteContent = async (url: string): Promise<string> => {
-  try {
-    // In a real implementation, you would use a proper web scraping service
-    // For now, we'll return a placeholder that simulates scraped content
-    const mockContent = `
-    About Our Company
-    We are a leading provider of professional services with over 10 years of experience in the industry.
-    Our team of experts specializes in delivering high-quality solutions to help businesses grow and succeed.
-    
-    Services
-    - Consulting Services
-    - Digital Marketing Solutions
-    - Web Development
-    - SEO Optimization
-    - Business Strategy
-    
-    Contact Information
-    123 Business Street, City, State 12345
-    Phone: (555) 123-4567
-    Email: info@example.com
-    
-    Our Mission
-    To provide exceptional value to our clients through innovative solutions and dedicated service.
-    `;
-    
-    console.log(`[Web Scraper] Simulated content extraction for: ${url}`);
-    return mockContent.trim();
-  } catch (error) {
-    console.error('Error scraping website content:', error);
-    return 'Unable to extract website content for analysis.';
-  }
-};
+// Web scraping is now handled by the dedicated webScraper service
 
 // Enhanced Google Gemini Pro for GEO Analysis
 export const analyzeWithGemini = async (url: string, location: string = 'United States'): Promise<AIAnalysisResult> => {

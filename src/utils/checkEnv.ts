@@ -19,8 +19,23 @@ export const checkRequiredEnvVars = () => {
   });
 
   if (missing.length > 0) {
-    console.error('❌ Missing environment variables:', missing);
-    console.error('Please add these to Vercel environment variables!');
+    console.warn('⚠️ Missing environment variables:', missing);
+    console.warn('Add these to Vercel for full functionality:');
+    console.warn('Go to: Vercel Dashboard → Settings → Environment Variables');
+    
+    // Show helpful message about which features are affected
+    if (missing.includes('VITE_OPENAI_API_KEY')) {
+      console.warn('- ChatGPT visibility testing will use mock data');
+    }
+    if (missing.includes('VITE_CLAUDE_API_KEY')) {
+      console.warn('- Claude visibility testing will use mock data');
+    }
+    if (missing.includes('VITE_PERPLEXITY_API_KEY')) {
+      console.warn('- Perplexity visibility testing will use mock data');
+    }
+    if (missing.includes('VITE_GEMINI_API_KEY')) {
+      console.warn('- Gemini visibility testing will use mock data');
+    }
     
     // Return false but don't throw - let app work with fallbacks
     return false;
