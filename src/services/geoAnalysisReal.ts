@@ -143,9 +143,8 @@ export const performRealGEOAnalysis = async (url: string): Promise<GEOMetrics> =
       }
     };
   } catch (error) {
-    // Real GEO analysis failed, using fallback
-    // Return a basic score if real analysis fails
-    return generateFallbackGEOMetrics(url);
+    // Real GEO analysis failed - throw the error so user knows
+    throw new Error(`GEO analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
 

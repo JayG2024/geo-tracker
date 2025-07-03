@@ -70,7 +70,7 @@ export const testChatGPTVisibility = async (url: string): Promise<AISearchResult
         'Authorization': `Bearer ${keys.openai}`
       },
       body: JSON.stringify({
-        model: 'gpt-4-turbo-preview',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',

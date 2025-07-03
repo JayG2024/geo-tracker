@@ -132,18 +132,23 @@ function AppContent() {
     } catch (err) {
       // console.error('Analysis failed:', err); // Commented for production
       
-      // Provide more specific error messages
-      let errorMessage = 'Failed to complete analysis. ';
+      // Show the actual error to help debug
+      let errorMessage = '';
       if (err instanceof Error) {
         if (err.message.includes('URL')) {
           errorMessage = 'Invalid URL format. Please enter a valid website URL (e.g., example.com or https://example.com)';
         } else if (err.message.includes('network') || err.message.includes('fetch')) {
           errorMessage = 'Network error. Please check your connection and try again.';
+        } else if (err.message.includes('401') || err.message.includes('403')) {
+          errorMessage = 'API authentication failed. Please check that all API keys are correctly configured on Vercel.';
+        } else if (err.message.includes('429')) {
+          errorMessage = 'API rate limit exceeded. Please try again in a few minutes.';
         } else {
-          errorMessage += err.message;
+          // Show the actual error message
+          errorMessage = `Error: ${err.message}`;
         }
       } else {
-        errorMessage += 'Please try again.';
+        errorMessage = 'An unexpected error occurred. Please try again.';
       }
       
       setError(errorMessage);

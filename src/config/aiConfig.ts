@@ -44,7 +44,7 @@ export const aiConfig: AIConfig = {
   providers: {
     openai: {
       enabled: true,
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4o',
       maxTokens: 1500,
       temperature: 0.3
     },
