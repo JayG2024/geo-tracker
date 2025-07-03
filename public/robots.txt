@@ -1,0 +1,14 @@
+# GEO Test AI Robots.txt
+# https://www.geotest.ai
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /debug/
+Disallow: /shared/
+
+# Sitemap
+Sitemap: https://www.geotest.ai/sitemap.xml
+
+# Crawl-delay for responsible crawling
+Crawl-delay: 1

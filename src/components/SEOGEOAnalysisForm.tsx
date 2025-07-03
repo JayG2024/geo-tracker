@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, Sparkles, TrendingUp, Brain, Globe, Zap, CheckCircle } from 'lucide-react';
 import ErrorDisplay from './ErrorDisplay';
 import { ERROR_MESSAGES } from '../utils/errorMessages';
+import { validateURL } from '../utils/validation';
 
 interface Props {
   onAnalyze: (url: string) => void;
@@ -23,18 +24,18 @@ const SEOGEOAnalysisForm: React.FC<Props> = ({
     e.preventDefault();
     setError('');
 
-    if (!url) {
-      setError(ERROR_MESSAGES.INVALID_URL);
+    // Validate and sanitize URL
+    const validation = validateURL(url);
+    
+    if (!validation.isValid) {
+      setError(validation.error || ERROR_MESSAGES.INVALID_URL);
       return;
     }
 
-    // Basic URL validation
-    try {
-      const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`);
-      onAnalyze(urlObj.href);
+    // Use sanitized URL
+    if (validation.sanitized) {
+      onAnalyze(validation.sanitized);
       setUrl('');
-    } catch {
-      setError(ERROR_MESSAGES.INVALID_URL);
     }
   };
 

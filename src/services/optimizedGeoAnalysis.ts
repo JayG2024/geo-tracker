@@ -2,7 +2,7 @@
 import { GEOMetrics } from '../types/analysis';
 import { cacheService } from './cacheService';
 import { testChatGPTVisibility, testClaudeVisibility, testPerplexityVisibility, testGeminiVisibility } from './aiSearchVisibility';
-import { analyzeWithOpenAI, analyzeWithGemini, analyzeWithClaude } from './aiAnalysis';
+import { analyzeWithGPT4, analyzeWithGemini, analyzeWithClaude } from './aiAnalysis';
 
 // Combined AI provider results
 interface CombinedAIResults {
@@ -45,7 +45,7 @@ export const performOptimizedGEOAnalysis = async (url: string): Promise<GEOMetri
       cacheService.getOrFetch(`perplexity-${url}`, () => testPerplexityVisibility(url)),
       cacheService.getOrFetch(`gemini-${url}`, () => testGeminiVisibility(url)),
       // Analysis (GPT-4 only, reuse Claude and Gemini results)
-      cacheService.getOrFetch(`gpt4-analysis-${url}`, () => analyzeWithOpenAI(url, {}))
+      cacheService.getOrFetch(`gpt4-analysis-${url}`, () => analyzeWithGPT4(url))
     ]);
 
     // Process results efficiently
