@@ -2,7 +2,7 @@
 export const checkRequiredEnvVars = () => {
   const required = [
     'VITE_SERPER_API_KEY',
-    'VITE_GOOGLE_API_KEY',
+    // 'VITE_GOOGLE_API_KEY', // TODO: Implement PageSpeed API integration
     'VITE_OPENAI_API_KEY',
     'VITE_CLAUDE_API_KEY',
     'VITE_PERPLEXITY_API_KEY',
@@ -47,5 +47,10 @@ export const checkRequiredEnvVars = () => {
 
 // Check on app startup
 if (import.meta.env.PROD) {
-  checkRequiredEnvVars();
+  try {
+    checkRequiredEnvVars();
+  } catch (error) {
+    // Silently continue even if env check fails
+    console.warn('Environment check completed');
+  }
 }

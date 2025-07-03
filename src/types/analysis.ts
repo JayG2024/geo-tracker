@@ -27,6 +27,8 @@ export interface SEOMetrics {
     backlinks: number;
     domainAuthority: number;
     trustFlow: number;
+    serpPosition?: number | null;
+    competitors?: string[];
   };
   userExperience: {
     score: number;

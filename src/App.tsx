@@ -128,7 +128,7 @@ function AppContent() {
       setShowAIProgress(false);
       setIsLoading(false);
     } catch (err) {
-      console.error('Analysis failed:', err);
+      // console.error('Analysis failed:', err); // Commented for production
       
       // Provide more specific error messages
       let errorMessage = 'Failed to complete analysis. ';
