@@ -9,9 +9,22 @@ import {
   Globe,
   Sparkles,
   BarChart3,
-  Lock
+  Lock,
+  AlertTriangle,
+  Target,
+  Shield,
+  Zap,
+  Activity,
+  Link2,
+  Search,
+  MessageSquare
 } from 'lucide-react';
 import { CombinedAnalysis, Recommendation } from '../types/analysis';
+import { 
+  generateDetailedInsights, 
+  generateCompetitorInsights,
+  generateActionableRecommendations 
+} from '../services/enhancedAnalysis';
 
 interface Props {
   analysis: CombinedAnalysis;
@@ -26,6 +39,11 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
   onShare,
   isFreeTier = false 
 }) => {
+  // Generate enhanced insights
+  const detailedInsights = generateDetailedInsights(analysis);
+  const competitorInsights = generateCompetitorInsights(analysis);
+  const enhancedRecommendations = generateActionableRecommendations(analysis);
+
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
@@ -159,6 +177,33 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
           </div>
         </div>
       </div>
+
+      {/* Executive Summary */}
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-lg p-6 border border-gray-100">
+        <div className="flex items-center gap-2 mb-4">
+          <MessageSquare className="w-5 h-5 text-blue-600" />
+          <h3 className="text-xl font-bold text-gray-900">Executive Summary</h3>
+        </div>
+        <p className="text-gray-700 leading-relaxed">{detailedInsights.summary}</p>
+      </div>
+
+      {/* Critical Issues Alert */}
+      {detailedInsights.criticalIssues.length > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-xl shadow-lg p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <AlertTriangle className="w-5 h-5 text-red-600" />
+            <h3 className="text-xl font-bold text-red-900">Critical Issues Requiring Immediate Attention</h3>
+          </div>
+          <ul className="space-y-3">
+            {detailedInsights.criticalIssues.map((issue, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-red-600 rounded-full mt-1.5 flex-shrink-0" />
+                <p className="text-red-800">{issue}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* 1. Overview Section - Main Scores */}
       <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
