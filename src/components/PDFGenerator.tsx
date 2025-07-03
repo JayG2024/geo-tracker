@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
-import { AnalysisResult } from '../types';
+import { CombinedAnalysis } from '../types/analysis';
 
-export const generatePDFReport = (results: AnalysisResult): void => {
+export const generatePDFReport = (results: CombinedAnalysis): void => {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
@@ -224,14 +224,10 @@ export const generatePDFReport = (results: AnalysisResult): void => {
   const clientName = results.url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
   const formattedClientName = clientName.charAt(0).toUpperCase() + clientName.slice(1);
 
-  // Calculate GEO Visibility Score
-  const geoVisibilityScore = Math.round((
-    results.citationWorthinessScore +
-    results.eeatSignalStrengthScore +
-    results.structuredDataScore +
-    results.contentDepthScore +
-    results.topicalAuthorityScore
-  ) / 5);
+  // Use the actual GEO score from the analysis
+  const geoScore = Math.round(results.geo.score);
+  const seoScore = Math.round(results.seo.score);
+  const overallScore = Math.round(results.overallScore);
 
   // ======================
   // PART 1: COVER PAGE 📄
@@ -298,9 +294,9 @@ export const generatePDFReport = (results: AnalysisResult): void => {
   addKPIBlock(
     '🧠',
     'GEO Visibility Score',
-    `${geoVisibilityScore}/100`,
-    `Measures your content's likelihood of being cited by AI. ${geoVisibilityScore < 40 ? 'This score indicates a critical lack of deep, educational content.' : geoVisibilityScore < 70 ? 'This score shows moderate AI readiness with room for improvement.' : 'This score indicates strong AI citation potential.'}`,
-    geoVisibilityScore < 40 ? colors.danger : geoVisibilityScore < 70 ? colors.warning : colors.accent
+    `${geoScore}/100`,
+    `Measures your content's likelihood of being cited by AI. ${geoScore < 40 ? 'This score indicates a critical lack of deep, educational content.' : geoScore < 70 ? 'This score shows moderate AI readiness with room for improvement.' : 'This score indicates strong AI citation potential.'}`,
+    geoScore < 40 ? colors.danger : geoScore < 70 ? colors.warning : colors.accent
   );
   
   addKPIBlock(
@@ -312,11 +308,19 @@ export const generatePDFReport = (results: AnalysisResult): void => {
   );
   
   addKPIBlock(
-    '💰',
-    'Estimated ROI from GEO',
-    `$${results.estimatedROI.toLocaleString()}+ Annually`,
-    'Achieved by capturing high-intent customers at the very beginning of their decision-making journey.',
-    colors.accent
+    '🔍',
+    'SEO Performance Score',
+    `${seoScore}/100`,
+    `Traditional search engine optimization metrics. ${seoScore < 40 ? 'Critical SEO issues need immediate attention.' : seoScore < 70 ? 'Good foundation with room for improvement.' : 'Strong SEO performance across key metrics.'}`,
+    seoScore < 40 ? colors.danger : seoScore < 70 ? colors.warning : colors.accent
+  );
+  
+  addKPIBlock(
+    '📊',
+    'Overall Digital Authority',
+    `${overallScore}/100`,
+    'Combined measure of traditional SEO and AI search visibility, representing your total digital authority.',
+    overallScore < 40 ? colors.danger : overallScore < 70 ? colors.warning : colors.accent
   );
   
   // Strategic Opportunity
@@ -353,33 +357,33 @@ export const generatePDFReport = (results: AnalysisResult): void => {
   
   addMultilineText('Our GEO score is calculated from four critical pillars. Here\'s how you currently perform in each:', fonts.body, pageWidth - 2 * margin, colors.dark, spacing.subsection);
   
-  // Pillar analysis
+  // Pillar analysis based on actual data
   addPillarAnalysis(
-    '📚',
-    'Citation-Worthiness',
-    results.citationWorthinessScore,
-    'AI cites teachers, not salespeople. Your content is currently promotional, focusing on what your product does. AI is looking for deep, unbiased educational guides that explain the concepts behind your product.'
+    '🤖',
+    'AI Visibility',
+    results.geo.aiVisibility.score,
+    `Your presence across major AI platforms. ${results.geo.aiVisibility.score < 50 ? 'Limited visibility in AI search results - AI platforms are not finding or citing your content.' : 'AI platforms are recognizing your content as a valuable source.'}`
   );
   
   addPillarAnalysis(
-    '🧑‍🔬',
-    'E-E-A-T Signal Strength',
-    results.eeatSignalStrengthScore,
-    'AI doesn\'t trust ghosts. Your website lacks clear authorship. We don\'t know who the experts behind your company are. Without verifiable Experience, Expertise, Authoritativeness, and Trust, AI will not cite your content.'
+    '📝',
+    'Content Structure',
+    results.geo.contentStructure.score,
+    `How well your content is structured for AI comprehension. ${results.geo.contentStructure.score < 50 ? 'Content structure needs improvement for better AI understanding.' : 'Well-structured content that AI can easily parse and cite.'}`
   );
   
   addPillarAnalysis(
-    '📜',
-    'Content Depth & Authority',
-    results.contentDepthScore,
-    'AI prefers encyclopedias over pamphlets. Your articles are too brief and don\'t cover topics comprehensively. To become an authority, you need to create the single best, most in-depth resource on the internet for your core topics.'
+    '🎯',
+    'Information Accuracy',
+    results.geo.informationAccuracy.score,
+    `Accuracy and freshness of your business information. ${results.geo.informationAccuracy.score < 50 ? 'Information inconsistencies may confuse AI systems.' : 'Accurate, up-to-date information that builds AI trust.'}`
   );
   
   addPillarAnalysis(
-    '💻',
-    'Structured Data (Schema)',
-    results.structuredDataScore,
-    'Schema is the language AI understands. Your site lacks the advanced "labels" (like Person, Article, FAQ) that translate your content for machines, forcing them to guess its meaning and context.'
+    '🏆',
+    'Competitive Position',
+    results.geo.competitivePosition.score,
+    `Your authority relative to competitors. ${results.geo.competitivePosition.score < 50 ? 'Competitors are dominating the AI citation landscape.' : 'Strong competitive position with growing authority.'}`
   );
 
   addPageFooter();
@@ -447,25 +451,28 @@ export const generatePDFReport = (results: AnalysisResult): void => {
   
   addText('Current Path vs. Proposed Path:', fonts.heading, colors.dark, 'left', spacing.subsection);
   
-  // Visual path representation
-  doc.setFillColor(colors.danger[0], colors.danger[1], colors.danger[2]);
-  doc.rect(margin, yPosition, 120, 15, 'F');
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(fonts.body.size);
-  doc.setTextColor(colors.white[0], colors.white[1], colors.white[2]);
-  doc.text('Current Path (Red)', margin + 5, yPosition + 10);
-  yPosition += 20;
+  // Key Metrics Summary
+  addText('Current Performance Metrics:', fonts.heading, colors.dark, 'left', spacing.subsection);
   
-  addMultilineText('Competing for clicks in a crowded market with diminishing returns.', fonts.small, pageWidth - 2 * margin, colors.dark, spacing.subsection);
-  
-  // Blue line (proposed path)
+  // SEO Metrics
   doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.rect(margin, yPosition, 150, 15, 'F');
-  doc.setTextColor(colors.white[0], colors.white[1], colors.white[2]);
-  doc.text('Our Proposed Path (Blue)', margin + 5, yPosition + 10);
-  yPosition += 20;
+  doc.rect(margin, yPosition, pageWidth - 2 * margin, 80, 'F');
+  yPosition += 10;
+  addText('SEO Performance Breakdown', fonts.subheading, colors.white, 'left', spacing.line);
+  addText(`Technical SEO: ${Math.round(results.seo.technical.score)}/100`, fonts.body, colors.white, 'left', spacing.tight);
+  addText(`Content Quality: ${Math.round(results.seo.content.score)}/100`, fonts.body, colors.white, 'left', spacing.tight);
+  addText(`Domain Authority: ${Math.round(results.seo.authority.score)}/100`, fonts.body, colors.white, 'left', spacing.tight);
+  addText(`User Experience: ${Math.round(results.seo.userExperience.score)}/100`, fonts.body, colors.white, 'left', spacing.subsection);
   
-  addMultilineText('Building a long-term, defensible asset that generates high-quality leads by establishing true authority.', fonts.small);
+  // GEO Metrics
+  doc.setFillColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+  doc.rect(margin, yPosition, pageWidth - 2 * margin, 80, 'F');
+  yPosition += 10;
+  addText('GEO Performance Breakdown', fonts.subheading, colors.white, 'left', spacing.line);
+  addText(`AI Visibility: ${Math.round(results.geo.aiVisibility.score)}/100`, fonts.body, colors.white, 'left', spacing.tight);
+  addText(`Content Structure: ${Math.round(results.geo.contentStructure.score)}/100`, fonts.body, colors.white, 'left', spacing.tight);
+  addText(`Information Accuracy: ${Math.round(results.geo.informationAccuracy.score)}/100`, fonts.body, colors.white, 'left', spacing.tight);
+  addText(`Competitive Position: ${Math.round(results.geo.competitivePosition.score)}/100`, fonts.body, colors.white, 'left', spacing.subsection);
 
   addPageFooter();
 
@@ -479,6 +486,22 @@ export const generatePDFReport = (results: AnalysisResult): void => {
   addSection('🤝 Your Choice: Compete or Dominate?', colors.accent);
   
   yPosition += 20;
+  
+  // Add top recommendations if available
+  if (results.recommendations && results.recommendations.length > 0) {
+    addText('Priority Recommendations:', fonts.heading, colors.dark, 'left', spacing.subsection);
+    
+    const criticalRecs = results.recommendations.filter(r => r.priority === 'critical').slice(0, 3);
+    const highRecs = results.recommendations.filter(r => r.priority === 'high').slice(0, 3);
+    const topRecs = [...criticalRecs, ...highRecs].slice(0, 5);
+    
+    topRecs.forEach((rec, index) => {
+      const icon = rec.priority === 'critical' ? '🚨' : '⚠️';
+      addMultilineText(`${icon} ${rec.title}: ${rec.description}`, fonts.body, pageWidth - 2 * margin, colors.dark, spacing.line);
+    });
+    
+    yPosition += spacing.subsection;
+  }
   
   addMultilineText('You can continue competing on the same crowded playing field as everyone else.', fonts.body);
   

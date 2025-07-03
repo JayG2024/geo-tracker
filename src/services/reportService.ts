@@ -1,5 +1,5 @@
 import { ShareableReport, ReportAnalytics, SocialShareData } from '../types/reports';
-import { AnalysisResult } from '../types';
+import { CombinedAnalysis } from '../types/analysis';
 
 class ReportService {
   private readonly STORAGE_KEY = 'shareable_reports';
@@ -12,7 +12,7 @@ class ReportService {
 
   // Create shareable report
   async createShareableReport(
-    analysis: AnalysisResult,
+    analysis: CombinedAnalysis,
     options: {
       clientName?: string;
       expiresInDays?: number;
@@ -29,7 +29,7 @@ class ReportService {
 
     const report: ShareableReport = {
       id: reportId,
-      analysisId: analysis.id,
+      analysisId: `${analysis.url}_${analysis.timestamp}`,
       clientName: options.clientName || `Analysis for ${analysis.url}`,
       websiteUrl: analysis.url,
       createdAt: now,

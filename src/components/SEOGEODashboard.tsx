@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, 
   Brain, 
@@ -11,20 +11,60 @@ import {
   CheckCircle,
   Clock,
   Users,
-  Target
+  Target,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { supabase, isSupabaseConnected } from '../lib/supabase';
+
+interface OverviewStats {
+  totalScans: number;
+  avgSEOScore: number;
+  avgGEOScore: number;
+  totalUsers: number;
+  scansToday: number;
+  trendsUp: boolean;
+}
+
+interface ScoreDistribution {
+  name: string;
+  seo: number;
+  geo: number;
+}
+
+interface TrendData {
+  date: string;
+  seo: number;
+  geo: number;
+}
+
+interface TopIssue {
+  issue: string;
+  count: number;
+  category: string;
+  impact: string;
+}
+
+interface AIPlatformVisibility {
+  name: string;
+  value: number;
+  color: string;
+}
 
 const SEOGEODashboard: React.FC = () => {
-  // Mock data for demonstration
-  const overviewStats = {
-    totalScans: 1247,
-    avgSEOScore: 72,
-    avgGEOScore: 58,
-    totalUsers: 342,
-    scansToday: 47,
-    trendsUp: true
-  };
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  
+  const [overviewStats, setOverviewStats] = useState<OverviewStats>({
+    totalScans: 0,
+    avgSEOScore: 0,
+    avgGEOScore: 0,
+    totalUsers: 0,
+    scansToday: 0,
+    trendsUp: false
+  });
 
   const scoreDistribution = [
     { name: 'Excellent\n(80-100)', seo: 23, geo: 12 },

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Share2, Settings, Palette, Lock, Calendar, Download, X, Check } from 'lucide-react';
 import { reportService } from '../services/reportService';
-import { AnalysisResult } from '../types';
+import { CombinedAnalysis } from '../types/analysis';
 import { ShareableReport } from '../types/reports';
 
 interface CreateShareableReportProps {
-  analysis: AnalysisResult;
+  analysis: CombinedAnalysis;
   onReportCreated: (report: ShareableReport) => void;
   onCancel: () => void;
 }
