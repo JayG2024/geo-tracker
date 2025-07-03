@@ -82,11 +82,13 @@ const SEOGEOAnalysisForm: React.FC<Props> = ({
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* URL Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="website-url">
               Website URL
             </label>
             <div className="relative">
               <input
+                id="website-url"
+                name="website-url"
                 type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}

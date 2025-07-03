@@ -136,8 +136,9 @@ const URLAnalysisForm: React.FC<URLAnalysisFormProps> = ({ onAnalyze, isLoading,
                 Client/Project Name (Optional)
               </label>
               <input
-                type="text"
                 id="clientName"
+                name="clientName"
+                type="text"
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
                 className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -149,8 +150,9 @@ const URLAnalysisForm: React.FC<URLAnalysisFormProps> = ({ onAnalyze, isLoading,
                 Website URL *
               </label>
               <input
-                type="url"
                 id="url"
+                name="url"
+                type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
