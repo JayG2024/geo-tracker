@@ -130,34 +130,16 @@ export const performRealGEOAnalysis = async (url: string): Promise<GEOMetrics> =
         rankingPosition: aiVisibilityScore > 75 ? Math.ceil(Math.random() * 3) : 
                         aiVisibilityScore > 50 ? Math.ceil(Math.random() * 5 + 3) :
                         Math.ceil(Math.random() * 5 + 5),
-        topCompetitors: [], // Could be extracted from AI analysis
-        uniqueStrengths: recommendedActions.slice(0, 3)
+        authoritySignals: Math.round(competitiveScore * 0.9),
+        uniqueValueProps: Math.round(consensusScore * 0.85)
       },
-      contentOptimization: {
+      optimization: {
         score: Math.round((structureScore + consensusScore) / 2),
-        hasStructuredData,
-        usesCitationFormat: hasCitableContent,
-        hasAuthorInfo: accuracyScore > 80,
-        usesStatistics: insights.some(i => i.toLowerCase().includes('data') || i.toLowerCase().includes('statistics')),
-        hasLocalOptimization,
-        includesToC: structureScore > 80,
-        hasVideoContent: false, // Would need to check for this
-        usesLists: true, // Most modern sites do
-        hasConclusion: structureScore > 70
-      },
-      rankingFactors: {
-        citationWorthiness: hasCitableContent ? 85 : 60,
-        topicalAuthority: competitiveScore,
-        contentDepth: structureScore,
-        userEngagement: Math.round((geoScore + accuracyScore) / 2),
-        technicalOptimization: structureScore
-      },
-      localVisibility: {
-        googleMaps: hasLocalOptimization,
-        appleMaps: false, // Not tested
-        bingMaps: false, // Not tested
-        nearbySearch: hasLocalOptimization,
-        consistentNAP: accuracyScore > 70
+        entityRecognition: accuracyScore > 70,
+        knowledgeGraphPresence: aiVisibilityScore > 80,
+        wikipediaPresence: false, // Would need specific check
+        industryDirectories: competitiveScore > 70,
+        consistentNAP: accuracyScore > 70 // Name, Address, Phone consistency
       }
     };
   } catch (error) {
@@ -199,33 +181,15 @@ const generateFallbackGEOMetrics = (url: string): GEOMetrics => {
       score: 55,
       mentionRate: 45,
       rankingPosition: 6,
-      topCompetitors: [],
-      uniqueStrengths: ['Needs AI optimization']
+      authoritySignals: 50,
+      uniqueValueProps: 45
     },
-    contentOptimization: {
+    optimization: {
       score: 60,
-      hasStructuredData: false,
-      usesCitationFormat: false,
-      hasAuthorInfo: false,
-      usesStatistics: false,
-      hasLocalOptimization: false,
-      includesToC: false,
-      hasVideoContent: false,
-      usesLists: true,
-      hasConclusion: true
-    },
-    rankingFactors: {
-      citationWorthiness: 50,
-      topicalAuthority: 55,
-      contentDepth: 60,
-      userEngagement: 65,
-      technicalOptimization: 70
-    },
-    localVisibility: {
-      googleMaps: false,
-      appleMaps: false,
-      bingMaps: false,
-      nearbySearch: false,
+      entityRecognition: false,
+      knowledgeGraphPresence: false,
+      wikipediaPresence: false,
+      industryDirectories: false,
       consistentNAP: false
     }
   };
