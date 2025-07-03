@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Sparkles, TrendingUp, Brain, Globe, Zap, AlertCircle } from 'lucide-react';
+import { Search, Sparkles, TrendingUp, Brain, Globe, Zap, AlertCircle, CheckCircle } from 'lucide-react';
 
 interface Props {
   onAnalyze: (url: string) => void;
