@@ -37,6 +37,7 @@ class ErrorHandler {
       Sentry.init({
         dsn: sentryDsn,
         environment: import.meta.env.MODE,
+        sendDefaultPii: true,
         integrations: [
           Sentry.browserTracingIntegration(),
           Sentry.replayIntegration({

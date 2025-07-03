@@ -32,7 +32,7 @@
 #### Other Optional Variables:
 - [ ] `VITE_BING_API_KEY` - For Bing search visibility
 - [ ] `VITE_GA_MEASUREMENT_ID` - For analytics
-- [ ] `VITE_SENTRY_DSN` - For error tracking
+- [x] `VITE_SENTRY_DSN` - For error tracking ✅ READY TO ADD TO VERCEL
 
 ### 3. Deployment Settings ✅
 - [x] Auto-deploy from `main` branch
