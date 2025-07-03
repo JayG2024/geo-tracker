@@ -1,0 +1,106 @@
+GEO TEST - Text-Based Logo Designs
+==================================
+
+1. NEURAL NETWORK STYLE
+-----------------------
+     GEO ◉ TEST
+     ─────────────
+     Generative Engine Optimization
+
+
+2. MINIMALIST BRACKET STYLE
+---------------------------
+     [ GEO TEST ]
+     GENERATIVE ENGINE OPTIMIZATION
+
+
+3. TECH CIRCUIT STYLE
+---------------------
+     GEO • TEST [AI]
+     ━━━━━━━━━━━━━━━
+     GENERATIVE ENGINE OPTIMIZATION |
+
+
+4. MODERN MONOSPACE
+-------------------
+     ╔══════════════╗
+     ║  GEO  TEST   ║
+     ╚══════════════╝
+      Generative Engine Optimization
+
+
+5. ASCII ART VERSION
+--------------------
+      ██████╗ ███████╗ ██████╗     ████████╗███████╗███████╗████████╗
+     ██╔════╝ ██╔════╝██╔═══██╗    ╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝
+     ██║  ███╗█████╗  ██║   ██║       ██║   █████╗  ███████╗   ██║   
+     ██║   ██║██╔══╝  ██║   ██║       ██║   ██╔══╝  ╚════██║   ██║   
+     ╚██████╔╝███████╗╚██████╔╝       ██║   ███████╗███████║   ██║   
+      ╚═════╝ ╚══════╝ ╚═════╝        ╚═╝   ╚══════╝╚══════╝   ╚═╝   
+                    Generative Engine Optimization
+
+
+6. SIMPLE CLEAN
+---------------
+     GEO TEST
+     ═════════
+     Generative Engine Optimization
+
+
+7. VERTICAL STACK
+-----------------
+     ┌─────┐
+     │ GEO │
+     │ TEST│
+     └─────┘
+     Generative
+     Engine
+     Optimization
+
+
+8. FUTURISTIC
+-------------
+     <GEO::TEST>
+     ▓▓▓▓▓▓▓▓▓▓▓
+     GENERATIVE ENGINE OPTIMIZATION
+
+
+9. MINIMAL DOTS
+---------------
+     GEO·TEST
+     ········
+     Generative Engine Optimization
+
+
+10. CORPORATE STYLE
+-------------------
+     GEO | TEST™
+     ────────────
+     Generative Engine Optimization
+
+
+USAGE NOTES:
+============
+- All logos are designed to work in single color
+- The tagline "Generative Engine Optimization" can be removed for compact use
+- Recommended colors: Blue (#3B82F6), Indigo (#6366F1), or Black (#000000)
+- For web use, the SVG components in GeoTestLogo.tsx are recommended
+- For print or documents, any of these ASCII versions work well
+
+IMPLEMENTATION:
+===============
+To use in your app:
+
+import { GeoTestLogo, GeoTestLogoMinimal, GeoTestLogoTech } from './components/GeoTestLogo';
+
+// Default blue logo with tagline
+<GeoTestLogo />
+
+// Custom color without tagline
+<GeoTestLogoTech color="#6366F1" showTagline={false} />
+
+// Minimal version
+<GeoTestLogoMinimal color="#000000" className="h-12" />
+
+To view all variations:
+Navigate to: http://localhost:5173/logo

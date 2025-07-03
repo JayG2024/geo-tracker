@@ -10,6 +10,8 @@ import AIProviderStatus from './components/AIProviderStatus';
 import SharedReport from './components/SharedReport';
 import ReportManager from './components/ReportManager';
 import CreateShareableReport from './components/CreateShareableReport';
+import LogoShowcase from './components/LogoShowcase';
+import { GeoTestLogoTech } from './components/GeoTestLogo';
 import { generatePDFReport } from './components/PDFGenerator';
 import { CombinedAnalysis } from './types/analysis';
 import { ShareableReport } from './types/reports';
@@ -217,10 +219,7 @@ function AppContent() {
       }`}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
-              <Brain className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">GEO TRACKER</span>
+            <GeoTestLogoTech color="#3B82F6" className="h-10" showTagline={false} />
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -402,6 +401,7 @@ function AppContent() {
                 </div>
               </div>
             } />
+            <Route path="/logo" element={<LogoShowcase />} />
           </Routes>
         </main>
       </div>
