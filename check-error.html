@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Error Log</title>
+</head>
+<body>
+    <h1>GEO Tracker Error Log Check</h1>
+    <div id="error-info"></div>
+    <script>
+        // Get stored errors from localStorage
+        const storedErrors = JSON.parse(localStorage.getItem('geo_tracker_errors') || '[]');
+        
+        // Find the specific error
+        const errorId = 'ERR-1751552949178-rrc1py5q7';
+        const specificError = storedErrors.find(err => err.errorId === errorId);
+        
+        const container = document.getElementById('error-info');
+        
+        if (specificError) {
+            container.innerHTML = `
+                <h2>Error Found: ${errorId}</h2>
+                <p><strong>Message:</strong> ${specificError.message}</p>
+                <p><strong>Timestamp:</strong> ${specificError.timestamp}</p>
+                <p><strong>URL:</strong> ${specificError.url}</p>
+                <p><strong>Source:</strong> ${specificError.source || 'N/A'}</p>
+                <p><strong>Line:</strong> ${specificError.lineno || 'N/A'}</p>
+                <p><strong>Column:</strong> ${specificError.colno || 'N/A'}</p>
+                <pre><strong>Stack:</strong>\n${specificError.stack || 'No stack trace'}</pre>
+            `;
+        } else {
+            container.innerHTML = `
+                <h2>Error ${errorId} not found in recent logs</h2>
+                <h3>Recent Errors:</h3>
+                <ul>
+                ${storedErrors.slice(0, 5).map(err => `
+                    <li>
+                        <strong>${err.errorId}</strong> - ${err.message}
+                        <br><small>${err.timestamp}</small>
+                    </li>
+                `).join('')}
+                </ul>
+            `;
+        }
+        
+        // Also log to console
+        console.log('All stored errors:', storedErrors);
+        console.log('Specific error:', specificError);
+    </script>
+</body>
+</html>

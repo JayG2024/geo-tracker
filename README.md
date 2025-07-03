@@ -2,7 +2,7 @@
 
 The first and only tool that analyzes both traditional SEO and AI search visibility (GEO - Generative Engine Optimization).
 
-🚀 **Live Demo**: https://geo-tracker-deployment.vercel.app
+🚀 **Live Demo**: https://www.geotest.ai
 
 ## What is GEO Tracker?
 

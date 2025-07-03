@@ -4,7 +4,10 @@
 - **Project Name**: GEO Tracker - SEO + AI Search Visibility Tool
 - **Local Path**: `/Users/jasongordon/Desktop/geo-tracker/` (BLACK FOLDER)
 - **GitHub Repo**: https://github.com/JayG2024/geo-tracker
-- **Live URL**: https://geo-tracker-deployment.vercel.app
+- **Live URLs**: 
+  - Primary: https://www.geotest.ai
+  - Alternative: https://geotest.ai
+  - Vercel: https://geo-tracker-deployment.vercel.app
 - **Project ID**: geo-tracker-2024-07
 
 ## 🔗 SYNCHRONIZATION SETTINGS

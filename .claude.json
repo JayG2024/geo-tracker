@@ -13,7 +13,12 @@
   "deployment": {
     "platform": "Vercel",
     "projectName": "geo-tracker-deployment",
-    "url": "https://geo-tracker-deployment.vercel.app",
+    "urls": [
+      "https://www.geotest.ai",
+      "https://geotest.ai",
+      "https://geo-tracker-deployment.vercel.app"
+    ],
+    "primaryUrl": "https://www.geotest.ai",
     "autoDeploy": true,
     "branch": "main"
   },

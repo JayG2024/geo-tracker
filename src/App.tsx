@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { BarChart3, Search, FolderOpen, Settings, Home, Menu, X, AlertTriangle, Brain, Share2 } from 'lucide-react';
+import { BarChart3, Search, FolderOpen, Settings, Home, Menu, X, AlertTriangle, Brain, Share2, Bug } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import SEOGEODashboard from './components/SEOGEODashboard';
 import SEOGEOAnalysisForm from './components/SEOGEOAnalysisForm';
 import SEOGEOResultsSinglePage from './components/SEOGEOResultsSinglePage';
@@ -12,6 +13,7 @@ import ReportManager from './components/ReportManager';
 import CreateShareableReport from './components/CreateShareableReport';
 import LogoShowcase from './components/LogoShowcase';
 import { GeoTestLogoTech } from './components/GeoTestLogo';
+import Debug from './pages/Debug';
 import { generatePDFReport } from './components/PDFGenerator';
 import { CombinedAnalysis } from './types/analysis';
 import { ShareableReport } from './types/reports';
@@ -188,6 +190,7 @@ function AppContent() {
     { id: 'projects', name: 'My Websites', icon: FolderOpen, path: '/projects' },
     { id: 'reports', name: 'Reports', icon: Share2, path: '/reports' },
     { id: 'settings', name: 'Settings', icon: Settings, path: '/settings' },
+    { id: 'debug', name: 'Debug', icon: Bug, path: '/debug' },
   ];
 
   return (
@@ -407,6 +410,7 @@ function AppContent() {
               </div>
             } />
             <Route path="/logo" element={<LogoShowcase />} />
+            <Route path="/debug" element={<Debug />} />
           </Routes>
         </main>
       </div>
@@ -417,6 +421,7 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
+      <Analytics />
       <Routes>
         <Route path="/report/:reportId" element={<SharedReport />} />
         <Route path="/*" element={<AppContent />} />
