@@ -154,7 +154,7 @@ const SEOGEODashboard: React.FC = () => {
         // Fetch average scores
         const { data: analyses, error: analysesError } = await supabase
           .from('analyses')
-          .select('overall_score, geo_score, ai_score, technical_score, content_score, created_at');
+          .select('overall_score, geo_score, ai_score, technical_score, content_score, analysis_data, created_at');
 
         if (analysesError) throw analysesError;
 
@@ -359,8 +359,35 @@ const SEOGEODashboard: React.FC = () => {
     }
   };
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading dashboard data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {/* Connection Status Alert */}
+      {error && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-yellow-900">{error}</p>
+            {!isConnected && (
+              <p className="text-sm text-yellow-700 mt-1">
+                The dashboard is showing demo data. To enable data persistence, please configure your Supabase environment variables.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Header Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
