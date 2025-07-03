@@ -39,6 +39,19 @@ export interface SEOMetrics {
     };
     bounceRate: number;
     avgTimeOnPage: number;
+    pageSpeedInsights?: {
+      opportunities: Array<{
+        title: string;
+        description: string;
+        savings: string;
+        impact: 'high' | 'medium' | 'low';
+      }>;
+      diagnostics: Array<{
+        title: string;
+        description: string;
+        details: string;
+      }>;
+    };
   };
 }
 

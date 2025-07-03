@@ -2,7 +2,7 @@
 export const checkRequiredEnvVars = () => {
   const required = [
     'VITE_SERPER_API_KEY',
-    // 'VITE_GOOGLE_API_KEY', // TODO: Implement PageSpeed API integration
+    'VITE_GOOGLE_API_KEY',
     'VITE_OPENAI_API_KEY',
     'VITE_CLAUDE_API_KEY',
     'VITE_PERPLEXITY_API_KEY',

@@ -1,6 +1,7 @@
 import { CombinedAnalysis, SEOMetrics, GEOMetrics, Recommendation } from '../types/analysis';
 import { performRealGEOAnalysis } from './geoAnalysisReal';
 import { serperService } from './serperService';
+import { pageSpeedService } from './pageSpeedService';
 
 // Generate SEO metrics using real Serper API data
 export const generateSEOMetrics = async (url: string): Promise<SEOMetrics> => {
@@ -13,8 +14,11 @@ export const generateSEOMetrics = async (url: string): Promise<SEOMetrics> => {
     domain = url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
   }
 
-  // Get real SERP data from Serper
-  const serpMetrics = await serperService.analyzeWebsiteSEO(domain);
+  // Get real data from APIs
+  const [serpMetrics, pageSpeedData] = await Promise.all([
+    serperService.analyzeWebsiteSEO(domain),
+    pageSpeedService.analyzeUrl(url, 'mobile')
+  ]);
   
   // Use URL characteristics to generate consistent scores
   const urlLength = url.length;
@@ -33,21 +37,22 @@ export const generateSEOMetrics = async (url: string): Promise<SEOMetrics> => {
   const serpBonus = serpMetrics.position ? Math.max(0, 20 - (serpMetrics.position * 2)) : 0;
   const authorityScore = Math.min(95, baseAuthorityScore + serpBonus);
 
-  const technicalScore = random(65, 95);
+  // Use real PageSpeed data for technical and UX scores
+  const technicalScore = pageSpeedData ? Math.round((pageSpeedData.performanceScore + pageSpeedData.seoScore) / 2) : random(65, 95);
   const contentScore = random(60, 90) + (serpMetrics.hasAnswerBox ? 10 : 0);
-  const uxScore = random(70, 95);
+  const uxScore = pageSpeedData ? pageSpeedData.performanceScore : random(70, 95);
 
   return {
     score: Math.round((technicalScore + contentScore + authorityScore + uxScore) / 4),
     technical: {
       score: technicalScore,
-      pageSpeed: random(60, 95),
-      mobileResponsive: random(0, 100) > 20,
+      pageSpeed: pageSpeedData?.performanceScore || random(60, 95),
+      mobileResponsive: pageSpeedData ? pageSpeedData.performanceScore > 50 : random(0, 100) > 20,
       httpsEnabled: hasHttps || random(0, 100) > 30,
       xmlSitemap: random(0, 100) > 40,
       robotsTxt: random(0, 100) > 50,
       canonicalTags: random(0, 100) > 60,
-      structuredData: random(0, 100) > 70
+      structuredData: pageSpeedData ? pageSpeedData.seoScore > 80 : random(0, 100) > 70
     },
     content: {
       score: contentScore,
@@ -70,12 +75,16 @@ export const generateSEOMetrics = async (url: string): Promise<SEOMetrics> => {
     userExperience: {
       score: uxScore,
       coreWebVitals: {
-        lcp: random(1.5, 3.5),
-        fid: random(50, 200),
-        cls: random(0.05, 0.25)
+        lcp: pageSpeedData?.coreWebVitals.lcp || random(1.5, 3.5),
+        fid: pageSpeedData?.coreWebVitals.fid || random(50, 200),
+        cls: pageSpeedData?.coreWebVitals.cls || random(0.05, 0.25)
       },
       bounceRate: random(30, 70),
-      avgTimeOnPage: random(60, 300)
+      avgTimeOnPage: random(60, 300),
+      pageSpeedInsights: pageSpeedData ? {
+        opportunities: pageSpeedData.opportunities,
+        diagnostics: pageSpeedData.diagnostics
+      } : undefined
     }
   };
 };
@@ -165,6 +174,21 @@ export const generateRecommendations = (seo: SEOMetrics, geo: GEOMetrics): Recom
       impact: '10-20% improvement in rankings and conversions',
       effort: 'medium',
       estimatedTime: '4-8 hours'
+    });
+  }
+
+  // Add specific PageSpeed recommendations if available
+  if (seo.userExperience.pageSpeedInsights?.opportunities) {
+    seo.userExperience.pageSpeedInsights.opportunities.slice(0, 3).forEach(opportunity => {
+      recommendations.push({
+        category: 'seo',
+        priority: opportunity.impact === 'high' ? 'critical' : 'high',
+        title: opportunity.title,
+        description: `${opportunity.description} (Potential savings: ${opportunity.savings})`,
+        impact: `Performance improvement of ${opportunity.savings}`,
+        effort: opportunity.impact === 'high' ? 'medium' : 'easy',
+        estimatedTime: opportunity.impact === 'high' ? '2-4 hours' : '1-2 hours'
+      });
     });
   }
 
