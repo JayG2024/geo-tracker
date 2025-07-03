@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Globe, MapPin, Brain, FileText, Loader, Zap, Target, TrendingUp, Award, Lightbulb, Shield, BarChart3 } from 'lucide-react';
+import { Brain, FileText, Loader, Zap, Target, TrendingUp, Award, Lightbulb, Shield, BarChart3 } from 'lucide-react';
 
 interface URLAnalysisFormProps {
   onAnalyze: (url: string, analysisTypes: string[]) => void;

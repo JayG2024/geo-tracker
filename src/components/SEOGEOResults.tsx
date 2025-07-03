@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
 import { 
-  TrendingUp, 
   Brain, 
   Download, 
   Share2, 
   CheckCircle, 
   AlertTriangle, 
   XCircle,
-  ChevronRight,
   Globe,
   Sparkles,
   BarChart3,
-  Lock,
-  ArrowUp,
-  ArrowDown
+  Lock
 } from 'lucide-react';
 import { CombinedAnalysis, Recommendation } from '../types/analysis';
 

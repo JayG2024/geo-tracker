@@ -1,7 +1,7 @@
 # GEO Tracker Deployment Status
 
 ## 🚀 LIVE PRODUCTION URL
-**https://geo-tracker-deployment.vercel.app**
+**https://www.geotest.ai**
 
 ## ✅ Current Status
 - **Deployed**: Successfully deployed to Vercel
