@@ -1,4 +1,5 @@
 import { CombinedAnalysis, SEOMetrics, GEOMetrics, Recommendation } from '../types/analysis';
+import { performRealGEOAnalysis } from './geoAnalysisReal';
 
 // Generate realistic SEO metrics based on URL
 export const generateSEOMetrics = (url: string): SEOMetrics => {
@@ -277,11 +278,15 @@ export const performSEOGEOAnalysis = async (url: string): Promise<CombinedAnalys
     domain = normalizedUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
   }
 
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  // Show loading for real API calls
+  console.log('Starting real AI analysis for:', normalizedUrl);
 
-  const seoMetrics = generateSEOMetrics(normalizedUrl);
-  const geoMetrics = generateGEOMetrics(normalizedUrl);
+  // Run SEO and GEO analysis in parallel
+  const [seoMetrics, geoMetrics] = await Promise.all([
+    generateSEOMetrics(normalizedUrl),
+    performRealGEOAnalysis(normalizedUrl) // This uses real AI APIs!
+  ]);
+
   const overallScore = Math.round((seoMetrics.score + geoMetrics.score) / 2);
   const recommendations = generateRecommendations(seoMetrics, geoMetrics);
   const competitors = generateCompetitorData(normalizedUrl);

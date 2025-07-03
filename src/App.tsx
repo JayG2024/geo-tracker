@@ -176,8 +176,8 @@ function AppContent() {
   };
 
   const navigation = [
-    { id: 'dashboard', name: 'Dashboard', icon: Home, path: '/' },
-    { id: 'analyze', name: 'SEO + GEO Analysis', icon: Brain, path: '/analyze' },
+    { id: 'analyze', name: 'SEO + GEO Analysis', icon: Brain, path: '/' },
+    { id: 'dashboard', name: 'Dashboard', icon: Home, path: '/dashboard' },
     { id: 'projects', name: 'My Websites', icon: FolderOpen, path: '/projects' },
     { id: 'reports', name: 'Reports', icon: Share2, path: '/reports' },
     { id: 'settings', name: 'Settings', icon: Settings, path: '/settings' },
@@ -233,8 +233,7 @@ function AppContent() {
         <nav className="mt-8 px-4 space-y-2">
           {navigation.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path || 
-                           (item.path === '/' && location.pathname === '/dashboard');
+            const isActive = location.pathname === item.path;
             
             return (
               <button
@@ -290,8 +289,8 @@ function AppContent() {
             <div className="flex items-center space-x-4">
               <div className="hidden sm:block">
                 <p className="text-sm text-gray-600">
-                  {location.pathname === '/' && 'SEO + GEO visibility tracking for Google and AI search engines'}
-                  {location.pathname === '/analyze' && 'Complete SEO audit + AI search visibility analysis in one scan'}
+                  {location.pathname === '/' && 'Complete SEO audit + AI search visibility analysis in one scan'}
+                  {location.pathname === '/dashboard' && 'SEO + GEO visibility tracking for Google and AI search engines'}
                   {location.pathname === '/results' && 'Comprehensive SEO and GEO optimization recommendations'}
                   {location.pathname === '/projects' && 'Track and monitor your websites\' search performance over time'}
                   {location.pathname === '/reports' && 'Professional PDF reports for clients and stakeholders'}
@@ -314,7 +313,27 @@ function AppContent() {
         {/* Page Content */}
         <main className="flex-1 p-4 lg:p-8 overflow-auto">
           <Routes>
-            <Route path="/" element={<SEOGEODashboard />} />
+            <Route path="/" element={
+              <div>
+                {error && (
+                  <div className="mb-6 bg-red-50 border border-red-200 p-4 rounded-lg">
+                    <p className="text-red-800">{error}</p>
+                    <button 
+                      onClick={() => setError(null)}
+                      className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                )}
+                <SEOGEOAnalysisForm 
+                  onAnalyze={handleAnalyze} 
+                  isLoading={isLoading}
+                  isFreeTier={false}
+                  scansRemaining={999}
+                />
+              </div>
+            } />
             <Route path="/dashboard" element={<SEOGEODashboard />} />
             <Route path="/analyze" element={
               <div>
