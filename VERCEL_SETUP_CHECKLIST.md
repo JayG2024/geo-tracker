@@ -22,11 +22,15 @@
 - [x] `VITE_SUPABASE_ANON_KEY` - For database auth ✅ Added 15h ago
 - [x] `SUPABASE_SERVICE_ROLE_KEY` - For admin operations ✅ Added 15h ago
 
-#### Optional Variables (Add as needed):
+#### AI Provider Variables (Optional but recommended):
+**Note: App shows "Mock Mode" without these, but still functions**
+- [ ] `VITE_OPENAI_API_KEY` - For GPT-4 analysis
+- [ ] `VITE_CLAUDE_API_KEY` - For Claude analysis
+- [ ] `VITE_GEMINI_API_KEY` - For Gemini analysis
+- [ ] `VITE_PERPLEXITY_API_KEY` - For Perplexity analysis
+
+#### Other Optional Variables:
 - [ ] `VITE_BING_API_KEY` - For Bing search visibility
-- [ ] `VITE_OPENAI_API_KEY` - For GPT testing
-- [ ] `VITE_CLAUDE_API_KEY` - For Claude testing
-- [ ] `VITE_GEMINI_API_KEY` - For Gemini testing
 - [ ] `VITE_GA_MEASUREMENT_ID` - For analytics
 - [ ] `VITE_SENTRY_DSN` - For error tracking
 
