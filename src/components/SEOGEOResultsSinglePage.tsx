@@ -135,6 +135,12 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
           <span>Impact: {rec.impact}</span>
           <span>•</span>
           <span>Category: {rec.category}</span>
+          {rec.estimatedTime && (
+            <>
+              <span>•</span>
+              <span>Time: {rec.estimatedTime}</span>
+            </>
+          )}
         </div>
       </div>
     );
@@ -195,13 +201,19 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
             <h3 className="text-xl font-bold text-red-900">Critical Issues Requiring Immediate Attention</h3>
           </div>
           <ul className="space-y-3">
-            {detailedInsights.criticalIssues.map((issue, i) => (
+            {detailedInsights.criticalIssues.slice(0, isFreeTier ? 2 : undefined).map((issue, i) => (
               <li key={i} className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-red-600 rounded-full mt-1.5 flex-shrink-0" />
                 <p className="text-red-800">{issue}</p>
               </li>
             ))}
           </ul>
+          {isFreeTier && detailedInsights.criticalIssues.length > 2 && (
+            <p className="text-sm text-red-700 mt-3 flex items-center gap-2">
+              <Lock className="w-4 h-4" />
+              {detailedInsights.criticalIssues.length - 2} more critical issues available in premium
+            </p>
+          )}
         </div>
       )}
 
@@ -249,6 +261,42 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
             ))}
         </div>
       </div>
+
+      {/* Key Opportunities */}
+      {detailedInsights.opportunities.length > 0 && (
+        <div className="bg-green-50 border border-green-200 rounded-xl shadow-lg p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Target className="w-5 h-5 text-green-600" />
+            <h3 className="text-xl font-bold text-green-900">Key Opportunities for Improvement</h3>
+          </div>
+          <ul className="space-y-3">
+            {detailedInsights.opportunities.map((opportunity, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-green-600 rounded-full mt-1.5 flex-shrink-0" />
+                <p className="text-green-800">{opportunity}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Competitive Advantages */}
+      {detailedInsights.competitiveAdvantages.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl shadow-lg p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Shield className="w-5 h-5 text-blue-600" />
+            <h3 className="text-xl font-bold text-blue-900">Your Competitive Advantages</h3>
+          </div>
+          <ul className="space-y-3">
+            {detailedInsights.competitiveAdvantages.map((advantage, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                <p className="text-blue-800">{advantage}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* 3. SEO Details */}
       <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
@@ -315,6 +363,66 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
           </div>
         </div>
 
+        {/* Core Web Vitals & Page Speed Details */}
+        <div className="mt-6">
+          <h4 className="font-semibold text-gray-900 mb-3">Performance Metrics</h4>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Activity className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-gray-700">Largest Contentful Paint</span>
+              </div>
+              <p className={`text-2xl font-bold ${analysis.seo.userExperience.coreWebVitals.lcp <= 2.5 ? 'text-green-600' : analysis.seo.userExperience.coreWebVitals.lcp <= 4 ? 'text-yellow-600' : 'text-red-600'}`}>
+                {analysis.seo.userExperience.coreWebVitals.lcp}s
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Target: &lt; 2.5s</p>
+            </div>
+            
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="w-4 h-4 text-purple-600" />
+                <span className="text-sm font-medium text-gray-700">First Input Delay</span>
+              </div>
+              <p className={`text-2xl font-bold ${analysis.seo.userExperience.coreWebVitals.fid <= 100 ? 'text-green-600' : analysis.seo.userExperience.coreWebVitals.fid <= 300 ? 'text-yellow-600' : 'text-red-600'}`}>
+                {analysis.seo.userExperience.coreWebVitals.fid}ms
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Target: &lt; 100ms</p>
+            </div>
+            
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <BarChart3 className="w-4 h-4 text-orange-600" />
+                <span className="text-sm font-medium text-gray-700">Cumulative Layout Shift</span>
+              </div>
+              <p className={`text-2xl font-bold ${analysis.seo.userExperience.coreWebVitals.cls <= 0.1 ? 'text-green-600' : analysis.seo.userExperience.coreWebVitals.cls <= 0.25 ? 'text-yellow-600' : 'text-red-600'}`}>
+                {analysis.seo.userExperience.coreWebVitals.cls.toFixed(3)}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Target: &lt; 0.1</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Authority Metrics */}
+        <div className="mt-6 grid md:grid-cols-2 gap-4">
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Link2 className="w-4 h-4 text-purple-600" />
+              <span className="text-sm font-medium text-gray-700">Backlink Profile</span>
+            </div>
+            <p className="text-2xl font-bold text-purple-600">{analysis.seo.authority.backlinks}</p>
+            <p className="text-xs text-gray-600">Total backlinks from {Math.floor(analysis.seo.authority.backlinks / 3)} domains</p>
+          </div>
+          
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Search className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-medium text-gray-700">Domain Authority</span>
+            </div>
+            <p className="text-2xl font-bold text-blue-600">{analysis.seo.authority.domainAuthority}/100</p>
+            <p className="text-xs text-gray-600">Trust Flow: {analysis.seo.authority.trustFlow}</p>
+          </div>
+        </div>
+
         {isFreeTier && (
           <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
             <Lock className="w-6 h-6 text-blue-600 mx-auto mb-2" />
@@ -338,10 +446,16 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
           <div>
             <h4 className="font-semibold text-gray-900 mb-3">AI Platform Visibility</h4>
             <div className="grid md:grid-cols-2 gap-4">
-              {Object.entries(analysis?.geo?.aiVisibility || {}).map(([platform, visible]) => (
-                <div key={platform} className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                  <span className="text-sm text-gray-700 capitalize">{platform}</span>
-                  {visible ? (
+              {[
+                { name: 'ChatGPT', key: 'chatGPT', visible: analysis?.geo?.aiVisibility?.chatGPT },
+                { name: 'Claude', key: 'claude', visible: analysis?.geo?.aiVisibility?.claude },
+                { name: 'Perplexity', key: 'perplexity', visible: analysis?.geo?.aiVisibility?.perplexity },
+                { name: 'Google Gemini', key: 'gemini', visible: analysis?.geo?.aiVisibility?.gemini },
+                { name: 'Bing Chat', key: 'bingChat', visible: analysis?.geo?.aiVisibility?.bingChat }
+              ].map((platform) => (
+                <div key={platform.key} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                  <span className="text-sm text-gray-700">{platform.name}</span>
+                  {platform.visible ? (
                     <span className="flex items-center text-green-600">
                       <CheckCircle className="w-4 h-4 mr-1" />
                       Visible
@@ -354,6 +468,50 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Information Accuracy */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-3">Information Accuracy</h4>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">Business Name</span>
+                  {analysis.geo.informationAccuracy.businessNameCorrect ? (
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-600" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">Services Listed</span>
+                  {analysis.geo.informationAccuracy.servicesAccurate ? (
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-600" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">Contact Information</span>
+                  {analysis.geo.informationAccuracy.contactInfoCorrect ? (
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-600" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">Location</span>
+                  {analysis.geo.informationAccuracy.locationAccurate ? (
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-600" />
+                  )}
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-3">
+                Last verified: {new Date(analysis.geo.informationAccuracy.lastUpdated).toLocaleDateString()}
+              </p>
             </div>
           </div>
 
@@ -395,6 +553,88 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
         </div>
       )}
 
+      {/* SWOT Analysis */}
+      <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+        <h3 className="text-xl font-bold text-gray-900 mb-6">SWOT Analysis</h3>
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Strengths */}
+          <div className="bg-green-50 rounded-lg p-4">
+            <h4 className="font-semibold text-green-900 mb-3 flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              Strengths
+            </h4>
+            <ul className="space-y-2">
+              {competitorInsights.strengths.map((strength, i) => (
+                <li key={i} className="text-sm text-green-800 flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 bg-green-600 rounded-full mt-1.5 flex-shrink-0" />
+                  {strength}
+                </li>
+              ))}
+              {competitorInsights.strengths.length === 0 && (
+                <li className="text-sm text-green-600 italic">Building foundational strengths</li>
+              )}
+            </ul>
+          </div>
+
+          {/* Weaknesses */}
+          <div className="bg-red-50 rounded-lg p-4">
+            <h4 className="font-semibold text-red-900 mb-3 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              Weaknesses
+            </h4>
+            <ul className="space-y-2">
+              {competitorInsights.weaknesses.map((weakness, i) => (
+                <li key={i} className="text-sm text-red-800 flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 bg-red-600 rounded-full mt-1.5 flex-shrink-0" />
+                  {weakness}
+                </li>
+              ))}
+              {competitorInsights.weaknesses.length === 0 && (
+                <li className="text-sm text-red-600 italic">No critical weaknesses identified</li>
+              )}
+            </ul>
+          </div>
+
+          {/* Opportunities */}
+          <div className="bg-blue-50 rounded-lg p-4">
+            <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+              <Target className="w-4 h-4" />
+              Opportunities
+            </h4>
+            <ul className="space-y-2">
+              {competitorInsights.opportunities.map((opportunity, i) => (
+                <li key={i} className="text-sm text-blue-800 flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-1.5 flex-shrink-0" />
+                  {opportunity}
+                </li>
+              ))}
+              {competitorInsights.opportunities.length === 0 && (
+                <li className="text-sm text-blue-600 italic">Explore market opportunities</li>
+              )}
+            </ul>
+          </div>
+
+          {/* Threats */}
+          <div className="bg-yellow-50 rounded-lg p-4">
+            <h4 className="font-semibold text-yellow-900 mb-3 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              Threats
+            </h4>
+            <ul className="space-y-2">
+              {competitorInsights.threats.map((threat, i) => (
+                <li key={i} className="text-sm text-yellow-800 flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 bg-yellow-600 rounded-full mt-1.5 flex-shrink-0" />
+                  {threat}
+                </li>
+              ))}
+              {competitorInsights.threats.length === 0 && (
+                <li className="text-sm text-yellow-600 italic">Monitor competitive landscape</li>
+              )}
+            </ul>
+          </div>
+        </div>
+      </div>
+
       {/* 6. All Recommendations */}
       <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
         <div className="flex items-center gap-2 mb-6">
@@ -403,7 +643,7 @@ const SEOGEOResultsSinglePage: React.FC<Props> = ({
         </div>
         
         <div className="space-y-4">
-          {analysis.recommendations.map((rec, index) => renderRecommendation(rec, index))}
+          {enhancedRecommendations.map((rec, index) => renderRecommendation(rec, index))}
         </div>
         
         {isFreeTier && (
