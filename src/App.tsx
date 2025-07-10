@@ -12,6 +12,7 @@ import SharedReport from './components/SharedReport';
 import ReportManager from './components/ReportManager';
 import CreateShareableReport from './components/CreateShareableReport';
 import LogoShowcase from './components/LogoShowcase';
+import Documentation from './pages/Documentation';
 import { GeoTestLogoTech } from './components/GeoTestLogo';
 import { generatePDFReport } from './components/PDFGenerator';
 import { CombinedAnalysis } from './types/analysis';
@@ -384,13 +385,16 @@ function AppContent() {
                   <p className="text-blue-100 mb-6">
                     Check out our documentation or contact support for assistance.
                   </p>
-                  <button className="px-6 py-3 bg-white text-blue-600 rounded-lg font-medium hover:bg-gray-100">
+                  <button 
+                    onClick={() => navigate('/documentation')}
+                    className="px-6 py-3 bg-white text-blue-600 rounded-lg font-medium hover:bg-gray-100">
                     View Documentation
                   </button>
                 </div>
               </div>
             } />
             <Route path="/logo" element={<LogoShowcase />} />
+            <Route path="/documentation" element={<Documentation />} />
           </Routes>
         </main>
       </div>
