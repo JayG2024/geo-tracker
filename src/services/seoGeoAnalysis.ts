@@ -3,6 +3,7 @@ import { performOptimizedGEOAnalysis } from './optimizedGeoAnalysis';
 import { serperService } from './serperService';
 import { pageSpeedService } from './pageSpeedService';
 import { cacheService } from './cacheService';
+import { scoringConfig } from '../config/scoringLogic';
 
 // Generate SEO metrics using real Serper API data
 export const generateSEOMetrics = async (url: string): Promise<SEOMetrics> => {
@@ -318,10 +319,56 @@ export const performSEOGEOAnalysis = async (url: string): Promise<CombinedAnalys
   try {
     // Starting real AI analysis
 
-    // Run SEO and GEO analysis in parallel with caching
+    // Check if this is our own domain
+    const specialScoring = scoringConfig.calculateScore(domain, { domainAge: 180 });
+    
+    if (specialScoring.isDemo) {
+      // Use special scoring for geotest.ai
+      const seoScore = specialScoring.seo.score;
+      const geoScore = specialScoring.geo.score;
+      
+      // Still run the analysis to get detailed metrics
+      const [seoMetrics, geoMetrics] = await Promise.all([
+        cacheService.getOrFetch(`seo-${normalizedUrl}`, () => generateSEOMetrics(normalizedUrl)),
+        performOptimizedGEOAnalysis(normalizedUrl)
+      ]);
+      
+      // Override the scores with demo scores
+      seoMetrics.score = seoScore;
+      geoMetrics.score = geoScore;
+      
+      // Add explanation about new domain visibility
+      const recommendations = [
+        ...specialScoring.explanation.content.map(content => ({
+          category: 'AI Visibility' as const,
+          priority: 'info' as const,
+          issue: 'New Domain Notice',
+          impact: content,
+          solution: 'Continue building authority and wait for AI platforms to update their indexes.'
+        })),
+        ...generateRecommendations(seoMetrics, geoMetrics)
+      ];
+      
+      const overallScore = Math.round((seoScore + geoScore) / 2);
+      const competitors = generateCompetitorData();
+      
+      return {
+        overallScore,
+        seo: seoMetrics,
+        geo: geoMetrics,
+        recommendations,
+        competitorComparison: competitors,
+        lastAnalyzed: new Date(),
+        url: normalizedUrl,
+        title: domain.charAt(0).toUpperCase() + domain.slice(1),
+        timestamp: new Date().toISOString()
+      };
+    }
+    
+    // Regular analysis for other domains
     const [seoMetrics, geoMetrics] = await Promise.all([
       cacheService.getOrFetch(`seo-${normalizedUrl}`, () => generateSEOMetrics(normalizedUrl)),
-      performOptimizedGEOAnalysis(normalizedUrl) // Optimized with caching and deduplication!
+      performOptimizedGEOAnalysis(normalizedUrl)
     ]);
 
     const overallScore = Math.round((seoMetrics.score + geoMetrics.score) / 2);
