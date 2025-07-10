@@ -72,16 +72,25 @@ export class SubscriptionService {
       const hoursSinceReset = (now.getTime() - resetTime.getTime()) / (1000 * 60 * 60);
 
       if (hoursSinceReset >= 24) {
-        // Reset the counter
-        await supabase
+        // Use atomic update to prevent race conditions
+        const { data: updatedProfile, error: updateError } = await supabase
           .from('profiles')
           .update({ 
             daily_scans_used: 0, 
             daily_scans_reset_at: now.toISOString() 
           })
-          .eq('id', userId);
+          .eq('id', userId)
+          .eq('daily_scans_reset_at', profile.daily_scans_reset_at) // Only update if reset time hasn't changed
+          .select('daily_scans_used, daily_scans_reset_at')
+          .single();
         
-        profile.daily_scans_used = 0;
+        if (updateError) {
+          console.error('Error resetting scan count:', updateError);
+        } else if (updatedProfile) {
+          // Only update local profile if the update was successful
+          profile.daily_scans_used = updatedProfile.daily_scans_used;
+          profile.daily_scans_reset_at = updatedProfile.daily_scans_reset_at;
+        }
       }
 
       // Get tier limits

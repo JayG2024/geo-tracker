@@ -7,6 +7,7 @@ interface CacheEntry<T> {
 class CacheService {
   private cache = new Map<string, CacheEntry<any>>();
   private readonly DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
+  private readonly MAX_CACHE_SIZE = 100; // Maximum number of cache entries
 
   // Get cached data if still valid
   get<T>(key: string): T | null {
@@ -23,6 +24,11 @@ class CacheService {
 
   // Set cache data
   set<T>(key: string, data: T): void {
+    // Check if we need to evict old entries
+    if (this.cache.size >= this.MAX_CACHE_SIZE) {
+      this.evictOldestEntries();
+    }
+    
     this.cache.set(key, {
       data,
       timestamp: Date.now()
@@ -37,6 +43,19 @@ class CacheService {
   // Clear all cache
   clearAll(): void {
     this.cache.clear();
+  }
+
+  // Evict oldest entries when cache is full
+  private evictOldestEntries(): void {
+    const entries = Array.from(this.cache.entries());
+    // Sort by timestamp (oldest first)
+    entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+    
+    // Remove oldest 20% of entries
+    const entriesToRemove = Math.ceil(this.MAX_CACHE_SIZE * 0.2);
+    entries.slice(0, entriesToRemove).forEach(([key]) => {
+      this.cache.delete(key);
+    });
   }
 
   // Check if key exists and is valid

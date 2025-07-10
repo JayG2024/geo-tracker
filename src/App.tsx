@@ -22,6 +22,13 @@ import { performSEOGEOAnalysis } from './services/seoGeoAnalysis';
 import { getUserFriendlyError, getErrorActions } from './utils/errorMessages';
 import ErrorDisplay from './components/ErrorDisplay';
 import Login from './components/auth/Login';
+
+// Utility function to escape HTML and prevent XSS
+const escapeHtml = (text: string): string => {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+};
 import Signup from './components/auth/Signup';
 import AuthLayout from './components/auth/AuthLayout';
 import UserProfile from './components/auth/UserProfile';
@@ -360,7 +367,7 @@ function AppContent() {
               <div>
                 {error && (
                   <div className="mb-6 bg-red-50 border border-red-200 p-4 rounded-lg">
-                    <p className="text-red-800">{error}</p>
+                    <p className="text-red-800" dangerouslySetInnerHTML={{ __html: escapeHtml(error) }}></p>
                     <button 
                       onClick={() => setError(null)}
                       className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
@@ -382,7 +389,7 @@ function AppContent() {
               <div>
                 {error && (
                   <div className="mb-6 bg-red-50 border border-red-200 p-4 rounded-lg">
-                    <p className="text-red-800">{error}</p>
+                    <p className="text-red-800" dangerouslySetInnerHTML={{ __html: escapeHtml(error) }}></p>
                     <button 
                       onClick={() => setError(null)}
                       className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
