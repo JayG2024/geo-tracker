@@ -1,14 +1,60 @@
 # GEO Test AI Robots.txt
 # https://www.geotest.ai
+# AI-Friendly SEO Analysis Tool
 
+# Welcome all crawlers
 User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /debug/
-Disallow: /shared/
+
+# Explicitly welcome AI crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+
+# Google and Bing
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+# Other AI/Search bots
+User-agent: FacebookBot
+Allow: /
+
+User-agent: TwitterBot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Applebot
+Allow: /
 
 # Sitemap
 Sitemap: https://www.geotest.ai/sitemap.xml
 
-# Crawl-delay for responsible crawling
-Crawl-delay: 1
+# No crawl delay for legitimate bots
+# Bad bots are blocked at server level

@@ -6,7 +6,7 @@ import SEOGEODashboard from './components/SEOGEODashboard';
 import SEOGEOAnalysisForm from './components/SEOGEOAnalysisForm';
 import SEOGEOResultsSinglePage from './components/SEOGEOResultsSinglePage';
 import ClientProjectManager from './components/ClientProjectManager';
-import AIAnalysisProgress from './components/AIAnalysisProgress';
+import AIAnalysisProgressV2 from './components/AIAnalysisProgressV2';
 import AIProviderStatus from './components/AIProviderStatus';
 import SharedReport from './components/SharedReport';
 import ReportManager from './components/ReportManager';
@@ -178,7 +178,7 @@ function AppContent() {
     <div className="min-h-screen bg-gray-50 flex">
       {/* AI Analysis Progress Modal */}
       {showAIProgress && (
-        <AIAnalysisProgress
+        <AIAnalysisProgressV2
           providers={aiProviders}
           isAnalyzing={isLoading}
           onCancel={handleCancelAnalysis}

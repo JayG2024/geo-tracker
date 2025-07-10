@@ -28,8 +28,17 @@
     
     <!-- Additional SEO -->
     <link rel="canonical" href="https://www.geotest.ai/" />
-    <meta name="robots" content="index, follow" />
-    <meta name="googlebot" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" />
+    
+    <!-- Make site accessible to AI crawlers -->
+    <meta name="ai-crawler" content="index, follow" />
+    <meta name="chatgpt-bot" content="index, follow" />
+    <meta name="claude-bot" content="index, follow" />
+    <meta name="perplexity-bot" content="index, follow" />
     
     <!-- Schema.org markup -->
     <script type="application/ld+json">
@@ -48,6 +57,23 @@
       }
     }
     </script>
+    
+    <!-- Google Analytics (GA4) -->
+    <!-- To enable Google Analytics:
+         1. Go to https://analytics.google.com
+         2. Create a new GA4 property for geotest.ai
+         3. Get your Measurement ID (starts with G-)
+         4. Replace G-XXXXXXXXXX below with your ID
+         5. Uncomment the scripts below -->
+    <!-- 
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    -->
   </head>
   <body>
     <div id="root"></div>
