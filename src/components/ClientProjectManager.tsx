@@ -15,6 +15,7 @@ const ClientProjectManager: React.FC = () => {
     websiteUrl: '',
     notes: ''
   });
+  const [databaseConnected, setDatabaseConnected] = useState(true);
 
   // Load projects on component mount
   useEffect(() => {
@@ -23,8 +24,16 @@ const ClientProjectManager: React.FC = () => {
       try {
         const projectsData = await projectService.getAll();
         setProjects(projectsData);
+        // Check if we got real data or empty array due to no database
+        if (projectsData.length === 0) {
+          // Additional check to see if database is connected
+          const { supabase, isSupabaseConnected } = await import('../lib/supabase');
+          const connected = await isSupabaseConnected();
+          setDatabaseConnected(connected);
+        }
       } catch (error) {
         console.error('Error loading projects:', error);
+        setDatabaseConnected(false);
       } finally {
         setLoading(false);
       }
@@ -43,6 +52,12 @@ const ClientProjectManager: React.FC = () => {
   const handleAddProject = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check database connection first
+    if (!databaseConnected) {
+      alert('Database is not connected. Project tracking requires a Supabase database connection. Please configure your environment variables.');
+      return;
+    }
+    
     try {
       const createdProject = await projectService.create({
         clientName: newProject.clientName,
@@ -51,12 +66,28 @@ const ClientProjectManager: React.FC = () => {
         status: 'pending'
       });
       
+      // Check if we got a mock project (starts with 'mock-')
+      if (createdProject.id.startsWith('mock-')) {
+        alert('Database is not connected. Project was not saved. Please configure your Supabase environment variables.');
+        setDatabaseConnected(false);
+        return;
+      }
+      
       setProjects(prev => [createdProject, ...prev]);
       setNewProject({ clientName: '', websiteUrl: '', notes: '' });
       setShowAddProject(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating project:', error);
-      alert('Failed to create project. Please try again.');
+      
+      // Check for specific error types
+      if (error.message?.includes('duplicate') || error.message?.includes('already exists')) {
+        alert('A project with this website URL already exists.');
+      } else if (error.message?.includes('Database')) {
+        alert('Database connection error. Please check your Supabase configuration.');
+        setDatabaseConnected(false);
+      } else {
+        alert('Failed to create project. Please try again.');
+      }
     }
   };
 
@@ -100,14 +131,30 @@ const ClientProjectManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Database Connection Warning */}
+      {!databaseConnected && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-yellow-900">Database Not Connected</p>
+            <p className="text-sm text-yellow-700 mt-1">
+              Project tracking requires a Supabase database. Configure your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY 
+              environment variables to enable project saving and tracking.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Client Project Manager</h1>
           <p className="text-gray-600 mt-1">Manage and track all your GEO analysis projects</p>
           <div className="mt-2 flex items-center space-x-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-            <span className="text-gray-500 text-sm">Connected to Supabase Database</span>
+            <div className={`w-2 h-2 rounded-full ${databaseConnected ? 'bg-green-400' : 'bg-red-400'}`}></div>
+            <span className="text-gray-500 text-sm">
+              {databaseConnected ? 'Connected to Supabase Database' : 'Database not connected - Configure Supabase to save projects'}
+            </span>
           </div>
         </div>
         <button

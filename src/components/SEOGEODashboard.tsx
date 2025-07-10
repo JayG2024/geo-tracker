@@ -77,12 +77,12 @@ const SEOGEODashboard: React.FC = () => {
 
   const [topIssues, setTopIssues] = useState<TopIssue[]>([]);
 
-  const [aiPlatformVisibility] = useState<AIPlatformVisibility[]>([
-    { name: 'ChatGPT', value: 42, color: '#10b981' },
-    { name: 'Claude', value: 38, color: '#3b82f6' },
-    { name: 'Perplexity', value: 51, color: '#8b5cf6' },
-    { name: 'Gemini', value: 35, color: '#f59e0b' },
-    { name: 'Bing Chat', value: 46, color: '#ef4444' }
+  const [aiPlatformVisibility, setAiPlatformVisibility] = useState<AIPlatformVisibility[]>([
+    { name: 'ChatGPT', value: 0, color: '#10b981' },
+    { name: 'Claude', value: 0, color: '#3b82f6' },
+    { name: 'Perplexity', value: 0, color: '#8b5cf6' },
+    { name: 'Gemini', value: 0, color: '#f59e0b' },
+    { name: 'Bing Chat', value: 0, color: '#ef4444' }
   ]);
 
   // Check Supabase connection
@@ -91,7 +91,7 @@ const SEOGEODashboard: React.FC = () => {
       const connected = await isSupabaseConnected();
       setIsConnected(connected);
       if (!connected) {
-        setError('Data persistence is not available. Running in demo mode.');
+        setError('Database connection is not available.');
       }
     };
     checkConnection();
@@ -104,40 +104,34 @@ const SEOGEODashboard: React.FC = () => {
       setError(null);
 
       if (!supabase || !isConnected) {
-        // Use mock data if Supabase is not connected
+        // Set empty/zero values when Supabase is not connected
         setOverviewStats({
-          totalScans: 1247,
-          avgSEOScore: 72,
-          avgGEOScore: 58,
-          totalUsers: 342,
-          scansToday: 47,
-          trendsUp: true
+          totalScans: 0,
+          avgSEOScore: 0,
+          avgGEOScore: 0,
+          totalUsers: 0,
+          scansToday: 0,
+          trendsUp: false
         });
         
         setScoreDistribution([
-          { name: 'Excellent\n(80-100)', seo: 23, geo: 12 },
-          { name: 'Good\n(60-79)', seo: 45, geo: 28 },
-          { name: 'Needs Work\n(40-59)', seo: 28, geo: 41 },
-          { name: 'Poor\n(0-39)', seo: 4, geo: 19 }
+          { name: 'Excellent\n(80-100)', seo: 0, geo: 0 },
+          { name: 'Good\n(60-79)', seo: 0, geo: 0 },
+          { name: 'Needs Work\n(40-59)', seo: 0, geo: 0 },
+          { name: 'Poor\n(0-39)', seo: 0, geo: 0 }
         ]);
 
         setTrendData([
-          { date: 'Mon', seo: 68, geo: 52 },
-          { date: 'Tue', seo: 70, geo: 54 },
-          { date: 'Wed', seo: 69, geo: 56 },
-          { date: 'Thu', seo: 72, geo: 55 },
-          { date: 'Fri', seo: 71, geo: 58 },
-          { date: 'Sat', seo: 73, geo: 59 },
-          { date: 'Sun', seo: 72, geo: 58 }
+          { date: 'Mon', seo: 0, geo: 0 },
+          { date: 'Tue', seo: 0, geo: 0 },
+          { date: 'Wed', seo: 0, geo: 0 },
+          { date: 'Thu', seo: 0, geo: 0 },
+          { date: 'Fri', seo: 0, geo: 0 },
+          { date: 'Sat', seo: 0, geo: 0 },
+          { date: 'Sun', seo: 0, geo: 0 }
         ]);
 
-        setTopIssues([
-          { issue: 'Missing Meta Descriptions', count: 234, category: 'seo', impact: 'high' },
-          { issue: 'No AI Platform Visibility', count: 189, category: 'geo', impact: 'critical' },
-          { issue: 'Slow Page Speed', count: 156, category: 'seo', impact: 'high' },
-          { issue: 'Outdated Business Info in AI', count: 145, category: 'geo', impact: 'medium' },
-          { issue: 'No Structured Data', count: 123, category: 'both', impact: 'high' }
-        ]);
+        setTopIssues([]);
 
         setLoading(false);
         return;
@@ -339,6 +333,41 @@ const SEOGEODashboard: React.FC = () => {
           trendsUp: avgSEOScore > 70 // Simple trend logic
         });
 
+        // Calculate AI platform visibility from real data if available
+        if (analyses && analyses.length > 0) {
+          const platformCounts = {
+            ChatGPT: 0,
+            Claude: 0,
+            Perplexity: 0,
+            Gemini: 0,
+            'Bing Chat': 0
+          };
+
+          analyses.forEach(analysis => {
+            if (analysis.analysis_data && typeof analysis.analysis_data === 'object') {
+              const data = analysis.analysis_data as any;
+              // Check for AI visibility in analysis data
+              if (data.ai?.platforms) {
+                Object.keys(platformCounts).forEach(platform => {
+                  if (data.ai.platforms[platform] || data.ai.platforms[platform.toLowerCase()]) {
+                    platformCounts[platform as keyof typeof platformCounts]++;
+                  }
+                });
+              }
+            }
+          });
+
+          // Convert to percentages
+          const totalAnalyses = analyses.length;
+          setAiPlatformVisibility([
+            { name: 'ChatGPT', value: Math.round((platformCounts.ChatGPT / totalAnalyses) * 100), color: '#10b981' },
+            { name: 'Claude', value: Math.round((platformCounts.Claude / totalAnalyses) * 100), color: '#3b82f6' },
+            { name: 'Perplexity', value: Math.round((platformCounts.Perplexity / totalAnalyses) * 100), color: '#8b5cf6' },
+            { name: 'Gemini', value: Math.round((platformCounts.Gemini / totalAnalyses) * 100), color: '#f59e0b' },
+            { name: 'Bing Chat', value: Math.round((platformCounts['Bing Chat'] / totalAnalyses) * 100), color: '#ef4444' }
+          ]);
+        }
+
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
         setError('Failed to load dashboard data. Please try again later.');
@@ -371,6 +400,41 @@ const SEOGEODashboard: React.FC = () => {
     );
   }
 
+  // Show empty state when no data is available
+  if (!isConnected && overviewStats.totalScans === 0) {
+    return (
+      <div className="space-y-6">
+        {/* Connection Status Alert */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-yellow-900">Database connection is not available.</p>
+            <p className="text-sm text-yellow-700 mt-1">
+              To view analytics data, please configure your Supabase environment variables.
+            </p>
+          </div>
+        </div>
+
+        {/* Empty State */}
+        <div className="bg-white rounded-xl p-12 shadow-lg border border-gray-100 text-center">
+          <div className="max-w-md mx-auto">
+            <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Analytics Data Available</h3>
+            <p className="text-gray-600 mb-6">
+              Start analyzing websites to see SEO and GEO performance metrics here.
+            </p>
+            <button 
+              onClick={() => window.location.href = '/'}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              Analyze Your First Site
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Connection Status Alert */}
@@ -381,7 +445,7 @@ const SEOGEODashboard: React.FC = () => {
             <p className="text-sm font-medium text-yellow-900">{error}</p>
             {!isConnected && (
               <p className="text-sm text-yellow-700 mt-1">
-                The dashboard is showing demo data. To enable data persistence, please configure your Supabase environment variables.
+                No data to display. To enable data persistence, please configure your Supabase environment variables.
               </p>
             )}
           </div>
@@ -396,8 +460,14 @@ const SEOGEODashboard: React.FC = () => {
               <p className="text-gray-500 text-sm">Avg SEO Score</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{overviewStats.avgSEOScore}</p>
               <div className="flex items-center gap-1 mt-2">
-                <ArrowUp className="w-4 h-4 text-green-600" />
-                <span className="text-sm text-green-600">+3% this week</span>
+                {overviewStats.avgSEOScore > 0 ? (
+                  <>
+                    <ArrowUp className="w-4 h-4 text-green-600" />
+                    <span className="text-sm text-green-600">Active monitoring</span>
+                  </>
+                ) : (
+                  <span className="text-sm text-gray-500">No data yet</span>
+                )}
               </div>
             </div>
             <div className="bg-blue-100 p-3 rounded-lg">
@@ -412,8 +482,14 @@ const SEOGEODashboard: React.FC = () => {
               <p className="text-gray-500 text-sm">Avg GEO Score</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{overviewStats.avgGEOScore}</p>
               <div className="flex items-center gap-1 mt-2">
-                <ArrowUp className="w-4 h-4 text-green-600" />
-                <span className="text-sm text-green-600">+5% this week</span>
+                {overviewStats.avgGEOScore > 0 ? (
+                  <>
+                    <ArrowUp className="w-4 h-4 text-green-600" />
+                    <span className="text-sm text-green-600">Active monitoring</span>
+                  </>
+                ) : (
+                  <span className="text-sm text-gray-500">No data yet</span>
+                )}
               </div>
             </div>
             <div className="bg-purple-100 p-3 rounded-lg">
@@ -445,7 +521,7 @@ const SEOGEODashboard: React.FC = () => {
               <p className="text-3xl font-bold text-gray-900 mt-1">{overviewStats.totalUsers}</p>
               <div className="flex items-center gap-1 mt-2">
                 <Users className="w-4 h-4 text-blue-500" />
-                <span className="text-sm text-blue-500">12 premium</span>
+                <span className="text-sm text-blue-500">{overviewStats.totalUsers > 0 ? 'Active projects' : 'No projects yet'}</span>
               </div>
             </div>
             <div className="bg-orange-100 p-3 rounded-lg">
