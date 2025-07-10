@@ -1,6 +1,5 @@
 import { supabase, isSupabaseConnected } from '../lib/supabase';
 import { Project, AnalysisResult } from '../types';
-import { generateMockAnalysis } from './mockData';
 
 export class DatabaseError extends Error {
   constructor(message: string, public originalError?: any) {
@@ -214,66 +213,41 @@ export const projectService = {
 
 // Analysis Operations
 export const analysisService = {
-  async create(projectId: string, url: string): Promise<AnalysisResult> {
+  async create(projectId: string, url: string, analysisData: any): Promise<AnalysisResult> {
     try {
       await checkDatabaseConnection();
     } catch (error) {
-      console.warn('Database unavailable for analysis creation, using mock data:', error);
-      // Return mock analysis when database is unavailable
-      const mockResult = generateMockAnalysis(url);
-      return {
-        ...mockResult,
-        id: `mock-analysis-${Date.now()}`,
-        timestamp: new Date()
-      };
+      console.warn('Database unavailable for analysis creation:', error);
+      throw new DatabaseError('Cannot save analysis - database unavailable', error);
     }
     
     try {
-      // Generate mock analysis data
-      const mockResult = generateMockAnalysis(url);
+      // Use the actual analysis data passed in
       
-      // Store in database with enhanced GEO data
+      // Store actual analysis data in database
       const { data, error } = await supabase!
         .from('analyses')
         .insert({
           project_id: projectId,
-          overall_score: mockResult.overallScore,
-          geo_score: mockResult.geoVisibilityScore,
-          ai_score: mockResult.aiSearchScore,
-          technical_score: mockResult.technicalSeoScore,
-          content_score: mockResult.contentScore,
-          citation_score: mockResult.citationScore,
-          schema_score: mockResult.schemaScore,
-          market_position: mockResult.competitorRank,
-          total_competitors: mockResult.totalCompetitors,
-          estimated_roi: mockResult.estimatedROI,
+          overall_score: analysisData.overallScore || 0,
+          geo_score: analysisData.geo?.score || 0,
+          ai_score: analysisData.geo?.aiVisibility?.score || 0,
+          technical_score: analysisData.seo?.technical?.score || 0,
+          content_score: analysisData.seo?.content?.score || 0,
+          citation_score: analysisData.geo?.citations?.score || 0,
+          schema_score: analysisData.seo?.structuredData?.score || 0,
+          market_position: analysisData.competitorComparison?.position || 0,
+          total_competitors: analysisData.competitorComparison?.totalCompetitors || 0,
+          estimated_roi: 0, // Remove hard-coded ROI projections
           analysis_data: {
-            // Original fields
-            recommendations: mockResult.recommendations,
-            geographicData: mockResult.geographicData,
-            keywordRankings: mockResult.keywordRankings,
-            citations: mockResult.citations,
-            competitors: mockResult.competitors,
-            technicalIssues: mockResult.technicalIssues,
-            geoStrategyAdvantages: mockResult.geoStrategyAdvantages,
-            localMarketOpportunities: mockResult.localMarketOpportunities,
-            customerBehaviorPatterns: mockResult.customerBehaviorPatterns,
-            geoRoiProjection: mockResult.geoRoiProjection,
-            geoSuccessMetrics: mockResult.geoSuccessMetrics,
-            geoImplementationTimeline: mockResult.geoImplementationTimeline,
-            geoChallengesAndSolutions: mockResult.geoChallengesAndSolutions,
-            localCompetitorAnalysis: mockResult.localCompetitorAnalysis,
-            geoPerformanceMetrics: mockResult.geoPerformanceMetrics,
-            
-            // NEW: GEO-specific fields
-            citationWorthinessScore: mockResult.citationWorthinessScore,
-            eeatSignalStrengthScore: mockResult.eeatSignalStrengthScore,
-            structuredDataScore: mockResult.structuredDataScore,
-            contentDepthScore: mockResult.contentDepthScore,
-            topicalAuthorityScore: mockResult.topicalAuthorityScore,
-            analysisSummaryText: mockResult.analysisSummaryText,
-            actionableRecommendationsText: mockResult.actionableRecommendationsText,
-            topicalOpportunities: mockResult.topicalOpportunities
+            // Store the full analysis data
+            seo: analysisData.seo,
+            geo: analysisData.geo,
+            recommendations: analysisData.recommendations || [],
+            competitorComparison: analysisData.competitorComparison || {},
+            url: analysisData.url,
+            title: analysisData.title,
+            timestamp: analysisData.timestamp
           }
         })
         .select()
@@ -287,11 +261,22 @@ export const analysisService = {
         .update({ last_analyzed: new Date().toISOString() })
         .eq('id', projectId);
 
-      // Return the full analysis result
+      // Return the actual analysis result
       return {
-        ...mockResult,
+        ...analysisData,
         id: data.id,
-        timestamp: new Date(data.created_at)
+        timestamp: new Date(data.created_at),
+        // Map the saved data to expected format
+        overallScore: data.overall_score,
+        geoVisibilityScore: data.geo_score,
+        aiSearchScore: data.ai_score,
+        technicalSeoScore: data.technical_score,
+        contentScore: data.content_score,
+        citationScore: data.citation_score,
+        schemaScore: data.schema_score,
+        competitorRank: data.market_position,
+        totalCompetitors: data.total_competitors,
+        estimatedROI: data.estimated_roi
       };
     } catch (error) {
       if (error instanceof DatabaseError) throw error;

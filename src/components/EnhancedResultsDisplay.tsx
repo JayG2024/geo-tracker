@@ -48,13 +48,11 @@ export function EnhancedResultsDisplay({
               score={analysis.seo?.score || 0} 
               label="SEO Score" 
               type="seo"
-              previousScore={85}
             />
             <CircularScoreDisplay 
               score={analysis.geo?.score || 0} 
               label="GEO Score" 
               type="geo"
-              previousScore={78}
             />
           </div>
         );
