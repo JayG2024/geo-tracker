@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { BarChart3, Search, FolderOpen, Settings, Home, Menu, X, AlertTriangle, Brain, Share2 } from 'lucide-react';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation, Link } from 'react-router-dom';
+import { BarChart3, Search, FolderOpen, Settings, Home, Menu, X, AlertTriangle, Brain, Share2, LogOut, User } from 'lucide-react';
 import { Analytics } from '@vercel/analytics/react';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import SEOGEODashboard from './components/SEOGEODashboard';
 import SEOGEOAnalysisForm from './components/SEOGEOAnalysisForm';
 import SEOGEOResultsSinglePage from './components/SEOGEOResultsSinglePage';
@@ -20,6 +21,11 @@ import { ShareableReport } from './types/reports';
 import { performSEOGEOAnalysis } from './services/seoGeoAnalysis';
 import { getUserFriendlyError, getErrorActions } from './utils/errorMessages';
 import ErrorDisplay from './components/ErrorDisplay';
+import Login from './components/auth/Login';
+import Signup from './components/auth/Signup';
+import AuthLayout from './components/auth/AuthLayout';
+import UserProfile from './components/auth/UserProfile';
+import { SubscriptionService } from './services/subscription';
 
 interface AIProvider {
   name: string;
@@ -33,6 +39,7 @@ interface AIProvider {
 function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, signOut, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<CombinedAnalysis | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -40,7 +47,7 @@ function AppContent() {
   const [showAIProgress, setShowAIProgress] = useState(false);
   const [aiProviders, setAiProviders] = useState<AIProvider[]>([]);
   const [showCreateReport, setShowCreateReport] = useState(false);
-  const [freeTierScans, setFreeTierScans] = useState(999); // Unlimited free scans
+  const [scanLimit, setScanLimit] = useState({ allowed: true, remaining: 3, limit: 3 });
 
   const initializeAIProviders = (): AIProvider[] => [
     {
@@ -90,7 +97,16 @@ function AppContent() {
   };
 
   const handleAnalyze = async (url: string) => {
-    // No limits - everything is free!
+    // Check scan limits for authenticated users
+    if (user) {
+      const limit = await SubscriptionService.checkScanLimit(user.id);
+      setScanLimit(limit);
+      
+      if (!limit.allowed) {
+        setError('Daily scan limit reached. Upgrade to Pro for more scans.');
+        return;
+      }
+    }
 
     setIsLoading(true);
     setError(null);
@@ -127,7 +143,13 @@ function AppContent() {
       // Perform SEO + GEO analysis
       const results = await performSEOGEOAnalysis(url);
       
-      // No need to update count - unlimited scans!
+      // Increment scan count for authenticated users
+      if (user) {
+        await SubscriptionService.incrementScanCount(user.id);
+        // Update remaining scans
+        const newLimit = await SubscriptionService.checkScanLimit(user.id);
+        setScanLimit(newLimit);
+      }
       
       setAnalysisResults(results);
       navigate('/results');
@@ -168,12 +190,13 @@ function AppContent() {
   };
 
   const navigation = [
-    { id: 'analyze', name: 'AI Visibility Test', icon: Brain, path: '/' },
-    { id: 'dashboard', name: 'Dashboard', icon: Home, path: '/dashboard' },
-    { id: 'projects', name: 'My Websites', icon: FolderOpen, path: '/projects' },
-    { id: 'reports', name: 'Reports', icon: Share2, path: '/reports' },
-    { id: 'settings', name: 'Settings', icon: Settings, path: '/settings' },
-  ];
+    { id: 'analyze', name: 'AI Visibility Test', icon: Brain, path: '/', requireAuth: false },
+    { id: 'dashboard', name: 'Dashboard', icon: Home, path: '/dashboard', requireAuth: true },
+    { id: 'projects', name: 'My Websites', icon: FolderOpen, path: '/projects', requireAuth: true },
+    { id: 'reports', name: 'Reports', icon: Share2, path: '/reports', requireAuth: true },
+    { id: 'profile', name: 'Profile', icon: User, path: '/profile', requireAuth: true },
+    { id: 'settings', name: 'Settings', icon: Settings, path: '/settings', requireAuth: false },
+  ].filter(item => !item.requireAuth || isAuthenticated);
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -245,21 +268,52 @@ function AppContent() {
           })}
         </nav>
 
-        <div className="absolute bottom-4 left-4 right-4">
-          <div className="rounded-lg p-4 border bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
-            <div className="flex items-center mb-2">
-              <div className="w-2 h-2 rounded-full mr-2 bg-green-400"></div>
-              <p className="text-sm font-medium text-gray-900">
-                Full Access Unlocked
+        <div className="absolute bottom-4 left-4 right-4 space-y-4">
+          {/* User Info */}
+          {isAuthenticated && user ? (
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-medium">
+                    {user.email?.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{user.email}</p>
+                    <p className="text-xs text-gray-500">
+                      {scanLimit.limit === -1 ? 'Unlimited' : `${scanLimit.remaining}/${scanLimit.limit}`} scans today
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => signOut()}
+                className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          ) : (
+            <div className="rounded-lg p-4 border bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+              <p className="text-sm font-medium text-gray-900 mb-3">
+                Get More with an Account
               </p>
+              <div className="space-y-2">
+                <Link
+                  to="/login"
+                  className="block w-full px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="block w-full px-4 py-2 bg-white text-blue-600 text-center rounded-lg border border-blue-600 hover:bg-blue-50 transition-colors"
+                >
+                  Create Account
+                </Link>
+              </div>
             </div>
-            <p className="text-xs text-gray-600">
-              Unlimited SEO + GEO analysis available
-            </p>
-            <div className="mt-2 text-xs text-green-700">
-              ✓ All features enabled
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -318,8 +372,8 @@ function AppContent() {
                 <SEOGEOAnalysisForm 
                   onAnalyze={handleAnalyze} 
                   isLoading={isLoading}
-                  isFreeTier={false}
-                  scansRemaining={999}
+                  isFreeTier={!isAuthenticated}
+                  scansRemaining={scanLimit.remaining}
                 />
               </div>
             } />
@@ -340,8 +394,8 @@ function AppContent() {
                 <SEOGEOAnalysisForm 
                   onAnalyze={handleAnalyze} 
                   isLoading={isLoading}
-                  isFreeTier={false}
-                  scansRemaining={999}
+                  isFreeTier={!isAuthenticated}
+                  scansRemaining={scanLimit.remaining}
                 />
               </div>
             } />
@@ -395,6 +449,19 @@ function AppContent() {
             } />
             <Route path="/logo" element={<LogoShowcase />} />
             <Route path="/documentation" element={<Documentation />} />
+            <Route path="/profile" element={
+              isAuthenticated ? (
+                <UserProfile />
+              ) : (
+                <div className="text-center py-12">
+                  <User className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500">Please sign in to view your profile</p>
+                  <Link to="/login" className="text-blue-600 hover:text-blue-700 mt-2 inline-block">
+                    Sign in
+                  </Link>
+                </div>
+              )
+            } />
           </Routes>
         </main>
       </div>
@@ -405,11 +472,22 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <Analytics />
-      <Routes>
-        <Route path="/report/:reportId" element={<SharedReport />} />
-        <Route path="/*" element={<AppContent />} />
-      </Routes>
+      <AuthProvider>
+        <Analytics />
+        <Routes>
+          {/* Public routes */}
+          <Route path="/report/:reportId" element={<SharedReport />} />
+          
+          {/* Auth routes */}
+          <Route element={<AuthLayout requireAuth={false} />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+          </Route>
+          
+          {/* Main app */}
+          <Route path="/*" element={<AppContent />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

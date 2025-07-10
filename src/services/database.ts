@@ -115,13 +115,17 @@ export const projectService = {
     }
     
     try {
+      // Get current user
+      const { data: { user } } = await supabase!.auth.getUser();
+      
       const { data, error } = await supabase!
         .from('projects')
         .insert({
           client_name: project.clientName,
           website_url: project.websiteUrl,
           notes: project.notes,
-          status: project.status
+          status: project.status,
+          user_id: user?.id
         })
         .select()
         .single();
@@ -222,13 +226,15 @@ export const analysisService = {
     }
     
     try {
-      // Use the actual analysis data passed in
+      // Get current user
+      const { data: { user } } = await supabase!.auth.getUser();
       
       // Store actual analysis data in database
       const { data, error } = await supabase!
         .from('analyses')
         .insert({
           project_id: projectId,
+          user_id: user?.id,
           overall_score: analysisData.overallScore || 0,
           geo_score: analysisData.geo?.score || 0,
           ai_score: analysisData.geo?.aiVisibility?.score || 0,
