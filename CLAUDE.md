@@ -10,6 +10,12 @@
   - Vercel: https://geo-tracker-deployment.vercel.app
 - **Project ID**: geo-tracker-2024-07
 
+## ⚠️ CRITICAL DATABASE WARNING
+- **This is GeoTest.ai** - NOT app-suite
+- **Requires**: Its own separate Supabase database
+- **DO NOT**: Share database credentials with app-suite or any other project
+- **Current Issue**: App-suite is using the same database - needs separation
+
 ## 🔗 SYNCHRONIZATION SETTINGS
 - **Main Branch**: main
 - **Auto Deploy**: Enabled on Vercel (pushes to main auto-deploy)
